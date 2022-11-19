@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "rootDirs": ["src/apollo-server"],
+    "outDir": "dist",
+    "lib": ["es2020", "dom"],
+    "jsx": "react",
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "types": ["node"],
+  }
+}

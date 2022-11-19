@@ -1,0 +1,33 @@
+{
+  "name": "graphql-playground",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "compile": "tsc --watch",
+    "server:graphql": "node dist/apollo-server/index.js",
+    "server:static": "yarn parcel src/app/index.html",
+    "start": "concurrently yarn:compile yarn:server*",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@apollo/client": "3.7.1",
+    "@parcel/transformer-graphql": "^2.8.0",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "graphql-tag": "^2.12.6",
+    "jest": "29.3.1",
+    "parcel": "^2.8.0",
+    "process": "^0.11.10",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.1.1",
+    "concurrently": "^7.5.0",
+    "graphql": "^16.6.0"
+  }
+}
