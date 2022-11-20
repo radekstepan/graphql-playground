@@ -20,7 +20,7 @@ interface Numbers {
 const Numbers: FC<Numbers> = ({onUpdate}) => {
   const [input, setInput] = useState('');
 
-  const [saveNumbers, {loading, data}] = useMutation(SAVE_NUMBERS, {
+  const [saveNumbers, {data}] = useMutation(SAVE_NUMBERS, {
     variables: {
       input
     },
