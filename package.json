@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@apollo/client": "3.7.1",
+    "@parcel/transformer-less": "2.8.0",
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
