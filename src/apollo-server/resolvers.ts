@@ -7,10 +7,14 @@ const data = new Set<Number>();
 
 const resolvers = {
   Query: {
-    sum: () => ({
+    sum: (): Number => ({
       id: 'SUM',
       value: Array.from(data).reduce((acc, num) => acc + num.value, 0)
     }),
+    count: (): Number => ({
+      id: 'COUNT',
+      value: data.size
+    })
   },
   Mutation: {
     saveNumbers: (_root: unknown, args: {input: string}) => {

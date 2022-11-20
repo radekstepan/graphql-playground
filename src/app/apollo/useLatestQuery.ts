@@ -16,13 +16,12 @@ const useLatestQuery: typeof useQuery = (query, options) => {
 
     if (policy === CACHE_FIRST) {
       let forceRefetch = false;
-      const id = isLatestLink.identify(query, options?.variables);
-      for (const key of invalidate) {
-        const [isLatest, markAsLatest] = isLatestLink.checkIsLatest(id, key);
-        if (!isLatest) {
+      const queryId = isLatestLink.identify(query, options?.variables);
+      for (const cacheKey of invalidate) {
+        if (!isLatestLink.isLatest(queryId, cacheKey)) {
           // TODO we should mark as latest when data arrive.
           // TODO extend the context and handle in Link like mutation
-          markAsLatest();
+          isLatestLink.setLatest(queryId, cacheKey);
           forceRefetch = true;
         }
       }

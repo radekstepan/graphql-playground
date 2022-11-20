@@ -13,12 +13,12 @@ const SAVE_NUMBERS = gql`
   }
 `;
 
-interface Numbers {
+interface Props {
   onFocus: () => void;
   onUpdate: () => void;
 }
 
-const Numbers: FC<Numbers> = ({onFocus, onUpdate}) => {
+const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
 
   const [saveNumbers, {data}] = useMutation(SAVE_NUMBERS, {
@@ -28,7 +28,7 @@ const Numbers: FC<Numbers> = ({onFocus, onUpdate}) => {
     // NOTE to show this doesn't work if the query isn't watched.
     refetchQueries: ['GetSum'],
     context: {
-      invalidate: ['sum']
+      invalidate: ['@sum']
     }
   });
 
@@ -38,12 +38,12 @@ const Numbers: FC<Numbers> = ({onFocus, onUpdate}) => {
     }
   }, [data]);
 
-  const error = !data?.saveNumbers.length;
+  const error = data && !data.saveNumbers.length;
 
   return (
     <input
       type="text"
-      className={css('input', data && error && 'status-error')}
+      className={css('input', error && 'status-error')}
       value={input}
       onChange={({currentTarget}) => {
         setInput(currentTarget.value);

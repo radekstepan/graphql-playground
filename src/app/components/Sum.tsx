@@ -17,7 +17,7 @@ function Sum() {
   const {data} = useLatestQuery(GET_SUM, {
     fetchPolicy: 'cache-first',
     context: {
-      invalidate: ['sum']
+      invalidate: ['@sum']
     }
   });
 

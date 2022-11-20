@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import {useUpdate, useRendersCount} from 'react-use';
+import Count from './Count';
 import Numbers from './Numbers';
 import Sum from './Sum';
 
@@ -15,8 +16,12 @@ function App() {
           onFocus={() => setShowSum(false)}
           onUpdate={() => setShowSum(true)}
         />)
-        {showSum && ' = '}
-        {showSum && <Sum />}
+        {showSum && (
+          <>
+            {' = '}
+            <Sum />
+          </>
+        )}
       </code>
       <input
         className="render"
@@ -24,6 +29,7 @@ function App() {
         value={`Render ${count}`}
         onClick={onUpdate}
       />
+      <Count />
     </>
   );
 };

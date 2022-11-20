@@ -6,6 +6,7 @@ const typeDefs = `#graphql
 
   type Query {
     sum: Number!
+    count: Number!
   }
 
   type Mutation {

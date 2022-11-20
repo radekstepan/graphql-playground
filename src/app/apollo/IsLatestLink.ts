@@ -19,7 +19,8 @@ class IsLatestLink extends ApolloLink {
   isInUse = false;
   // TODO we could save this in Apollo cache.
   // TODO turn to LRU so this doesn't grow too large?
-  protected map = new Map<string, number>();
+  protected mutations = new Set<string>();
+  protected queries = new Map<string, Set<string>>;
 
   request(operation, forward) {
     const {query} = operation;
@@ -28,9 +29,10 @@ class IsLatestLink extends ApolloLink {
     if (invalidate) {
       if (isMutation(query)) {
         // TODO do this after the mutation resolves
-        for (const key of invalidate) {
-          const count = this.map.get(key);
-          this.map.set(key, count ? count + 1 : 1);
+        for (const cacheKey of invalidate) {
+          this.mutations.add(cacheKey);
+          this.queries.delete(cacheKey);
+          console.log('invalidate', cacheKey);
         }
       }
     }
@@ -47,22 +49,27 @@ class IsLatestLink extends ApolloLink {
     return name
   }
 
-  checkIsLatest(id: string, key: string): [boolean, Function] {
-    const currentVer = this.map.get(key) || 0;
-    if (!currentVer) {
-      return [true, () => {}];
+  isLatest(queryId: string, cacheKey: string): boolean {
+    // No mutation ran yet.
+    if (!this.mutations.has(cacheKey)) {
+      return true;
     }
 
-    const hash = `${key}:${id}`;
-    const queryVer = this.map.get(hash) || 0;
-
-    if (queryVer === currentVer) {
-      return [true, () => {}];
+    const queries = this.queries.get(cacheKey);
+    if (!queries) {
+      return false;
     }
 
-    return [false, () => {
-      this.map.set(hash, currentVer);
-    }];
+    return queries.has(queryId)
+  }
+
+  setLatest(queryId: string, cacheKey: string) {
+    const queries = this.queries.get(cacheKey);
+    if (!queries) {
+      this.queries.set(cacheKey, new Set([queryId]));
+    } else {
+      queries.add(queryId);
+    }
   }
 
   // A way to skip using this in tests.
