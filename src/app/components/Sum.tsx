@@ -1,6 +1,5 @@
-// import React, {useState} from 'react'
-import {useQuery} from '@apollo/client';
 import gql from 'graphql-tag';
+import useInvalidateQuery from '../apollo/useInvalidateQuery';
 
 const GET_SUM = gql`
   query GetSum {
@@ -13,7 +12,12 @@ const GET_SUM = gql`
 `;
 
 function Sum() {
-  const {data} = useQuery(GET_SUM);
+  const {data} = useInvalidateQuery(GET_SUM, {
+    fetchPolicy: 'cache-first',
+    context: {
+      invalidate: ['sum']
+    }
+  });
 
   return data?.sum.value;
 };

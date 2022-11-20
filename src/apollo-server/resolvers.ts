@@ -22,7 +22,7 @@ const resolvers = {
         .split(',')
         .map(d => d.trim())
         .map(parseFloat)
-        .filter(Number)
+        .filter(d => !Number.isNaN(d))
         .forEach((value, id) => data.add({id: id.toString(), value}));
       
       return data;

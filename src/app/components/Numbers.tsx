@@ -1,8 +1,7 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState, FC} from 'react'
 import {useMutation} from '@apollo/client';
 import gql from 'graphql-tag';
-
-const css = (classes: unknown[]) => classes.filter(Boolean).join(' ');
+import css from '../utils/css';
 
 const SAVE_NUMBERS = gql`
   mutation SaveNumbers($input: String!) {
@@ -14,21 +13,34 @@ const SAVE_NUMBERS = gql`
   }
 `;
 
-function Numbers() {
+interface Numbers {
+  onUpdate: () => void;
+}
+
+const Numbers: FC<Numbers> = ({onUpdate}) => {
   const [input, setInput] = useState('');
 
-  const [saveNumbers, {data}] = useMutation(SAVE_NUMBERS, {
+  const [saveNumbers, {loading, data}] = useMutation(SAVE_NUMBERS, {
     variables: {
       input
+    },
+    context: {
+      invalidate: ['sum']
     }
   });
+
+  useEffect(() => {
+    if (data) {
+      onUpdate();
+    }
+  }, [data]);
 
   const error = !data?.saveNumbers.length;
 
   return (
     <input
       type="text"
-      className={css(['input', data && error && 'status-error'])}
+      className={css('input', data && error && 'status-error')}
       value={input}
       onChange={({currentTarget}) => {
         setInput(currentTarget.value);
