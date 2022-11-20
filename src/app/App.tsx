@@ -1,15 +1,13 @@
-import 'react'
-import {useQuery} from '@apollo/client';
-import gql from 'graphql-tag';
-// @ts-ignore
-import GET_BOOKS from './GetBooks.gql';
+import React from 'react'
+import Numbers from './Numbers';
+import Sum from './Sum';
 
 function App() {
-  const result = useQuery(gql(GET_BOOKS), {
-    variables: {},
-  });  
-
-  return null;
+  return (
+    <code>
+      sum(<Numbers />) = <Sum />
+    </code>
+  );
 };
 
 export default App;

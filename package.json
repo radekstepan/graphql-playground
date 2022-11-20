@@ -5,15 +5,13 @@
   "type": "module",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "compile": "tsc --watch",
-    "server:graphql": "node dist/apollo-server/index.js",
+    "server:graphql": "nodemon --exec node --loader ts-node/esm src/apollo-server/index.ts",
     "server:static": "yarn parcel src/app/index.html",
-    "start": "concurrently yarn:compile yarn:server*",
+    "start": "concurrently yarn:server*",
     "test": "jest"
   },
   "devDependencies": {
     "@apollo/client": "3.7.1",
-    "@parcel/transformer-graphql": "^2.8.0",
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
@@ -28,6 +26,8 @@
   "dependencies": {
     "@apollo/server": "^4.1.1",
     "concurrently": "^7.5.0",
-    "graphql": "^16.6.0"
+    "graphql": "^16.6.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1"
   }
 }
