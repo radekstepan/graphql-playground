@@ -1,26 +1,15 @@
 #root {
+  font-family: monospace;
   zoom: 1.4;
 }
 
-// .app {
-//   padding: 4px 0;
-//   animation-duration: 1s;
-//   animation-timing-function: linear;
-//   animation-play-state: running;
+.header {
+  margin: 10px 0;
 
-//   @keyframes isUpdated {
-//     100% {
-//       background-color: #fff;  
-//     }
-//     0% {
-//       background-color: rgb(255, 255, 148);
-//     }
-//   }
-
-//   &.is-updated {
-//     animation-name: isUpdated;
-//   }
-// }
+  &:not(:first-child) {
+    margin-top: 30px;
+  }
+}
 
 .render {
   display: block;

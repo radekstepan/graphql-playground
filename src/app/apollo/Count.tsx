@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import useLatestQuery from '../apollo/useLatestQuery';
+import useLatestQuery from './useLatestQuery';
 
 const GET_COUNT = gql`
   query GetCount {
