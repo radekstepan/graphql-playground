@@ -8,7 +8,7 @@ const useLatestQuery: typeof useQuery = (query, options) => {
   const client = useApolloClient();
 
   const invalidate = options?.context?.invalidate;
-  if (invalidate) {
+  if (invalidate && isLatestLink.isInUse) {
     // TODO nextFetchPolicy?
     const queryPolicy = options.defaultOptions?.fetchPolicy;
     const defaultPolicy = client.defaultOptions?.query?.fetchPolicy
@@ -20,6 +20,8 @@ const useLatestQuery: typeof useQuery = (query, options) => {
       for (const key of invalidate) {
         const [isLatest, markAsLatest] = isLatestLink.checkIsLatest(id, key);
         if (!isLatest) {
+          // TODO we should mark as latest when data arrive.
+          // TODO extend the context and handle in Link like mutation
           markAsLatest();
           forceRefetch = true;
         }

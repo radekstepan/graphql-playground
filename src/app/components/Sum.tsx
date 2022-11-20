@@ -1,3 +1,4 @@
+// import {useQuery} from '@apollo/client';
 import gql from 'graphql-tag';
 import useLatestQuery from '../apollo/useLatestQuery';
 
@@ -12,6 +13,7 @@ const GET_SUM = gql`
 `;
 
 function Sum() {
+  // const {data} = useQuery(GET_SUM, {
   const {data} = useLatestQuery(GET_SUM, {
     fetchPolicy: 'cache-first',
     context: {

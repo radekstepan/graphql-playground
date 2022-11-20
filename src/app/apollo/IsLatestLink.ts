@@ -16,9 +16,10 @@ const isMutation = (query: DocumentNode) => {
 };
 
 class IsLatestLink extends ApolloLink {
+  isInUse = false;
   // TODO we could save this in Apollo cache.
   // TODO turn to LRU so this doesn't grow too large?
-  private map = new Map<string, number>();
+  protected map = new Map<string, number>();
 
   request(operation, forward) {
     const {query} = operation;
@@ -28,8 +29,8 @@ class IsLatestLink extends ApolloLink {
       if (isMutation(query)) {
         // TODO do this after the mutation resolves
         for (const key of invalidate) {
-          const count = this.map.get(key) || 0;
-          this.map.set(key, count + 1);
+          const count = this.map.get(key);
+          this.map.set(key, count ? count + 1 : 1);
         }
       }
     }
@@ -52,7 +53,7 @@ class IsLatestLink extends ApolloLink {
       return [true, () => {}];
     }
 
-    const hash = `${key}:${id}`
+    const hash = `${key}:${id}`;
     const queryVer = this.map.get(hash) || 0;
 
     if (queryVer === currentVer) {
@@ -62,6 +63,12 @@ class IsLatestLink extends ApolloLink {
     return [false, () => {
       this.map.set(hash, currentVer);
     }];
+  }
+
+  // A way to skip using this in tests.
+  use() {
+    this.isInUse = true;
+    return this;
   }
 }
 
