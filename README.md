@@ -25,7 +25,7 @@ GraphQL client query caching and invalidation playground
 3. Don't grow the internal map too large
   - Example: orphaned queries that never get cleared
 
-## [TanStack](https://tanstack.com/query)
+## [TanStack Query](https://tanstack.com/query) *née React Query*
 
 ✅ most powerful cache control
 
@@ -40,8 +40,8 @@ GraphQL client query caching and invalidation playground
 
 ✅ easier to migrate to with a better cache API
 
-🔶 we will have to write our own cache invalidation as part of an ["Exchange"](https://formidable.com/open-source/urql/docs/graphcache/) which will be removed from the actually query/mutation
+🔶 we will have to write our own cache invalidation as part of an ["Exchange"](https://formidable.com/open-source/urql/docs/graphcache/) which won't live with the query/mutation itself
 
 - same(ish) API and approach as Apollo
-- cache management is handled via ["exchanges"](https://formidable.com/open-source/urql/docs/comparison/) which might be easier to extend upon as they cover both caching and what Apollo calls "Links" (= network requests)
+- cache management (by default is a document cache but we'd want to use a normalizted cache) is handled via an ["Exchange"](https://formidable.com/open-source/urql/docs/comparison/) which might be easier to extend upon as they cover both caching and what Apollo calls "Links" (= network requests)
   - [`cache.invalidate`](https://formidable.com/open-source/urql/docs/graphcache/cache-updates/#invalidating-entities) lets us essentialy walk and discard any cache fields

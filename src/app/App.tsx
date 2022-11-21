@@ -41,9 +41,9 @@ function App() {
     <>
       <div className="select">
         {[
-          'Apollo',
+          'Vanilla Apollo',
           'Apollo w/ LatestLink',
-          'TanStack',
+          'TanStack Query',
           'urql'
         ].map((d, i) => (
           <div key={i}>
