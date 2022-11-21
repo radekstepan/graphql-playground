@@ -20,7 +20,7 @@ interface Props {
 const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
 
-  const {data, mutate: saveNumbers} = useMutation(['sum'], SAVE_NUMBERS);
+  const {data, mutate: saveNumbers} = useMutation(['numbers'], SAVE_NUMBERS);
 
   useEffect(() => {
     if (data) {

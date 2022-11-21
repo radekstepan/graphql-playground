@@ -12,6 +12,7 @@ GraphQL client query caching and invalidation playground
 ## Apollo Client with IsLatestLink & useLatestQuery
 
 ✅ addon on top of what we have
+
 🔶 hacky
 
 ### Constraints
@@ -27,6 +28,7 @@ GraphQL client query caching and invalidation playground
 ## [TanStack](https://tanstack.com/query)
 
 ✅ most powerful cache control
+
 🔶 most difficult to migrate to
 
 - can pass [`invalidateQueries`](https://tanstack.com/query/v4/docs/guides/query-invalidation) which can invalidate a query that starts with a key (without immediately re-excuting it unless it's being currently rendered by useQuery)
@@ -37,6 +39,7 @@ GraphQL client query caching and invalidation playground
 ## [urql](https://formidable.com/open-source/urql/)
 
 ✅ easier to migrate to with a better cache API
+
 🔶 we will have to write our own cache invalidation as part of an ["Exchange"](https://formidable.com/open-source/urql/docs/graphcache/) which will be removed from the actually query/mutation
 
 - same(ish) API and approach as Apollo

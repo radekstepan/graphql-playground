@@ -11,7 +11,7 @@ const GET_COUNT = `#graphql
 `;
 
 function useGetCount() {
-  useQuery(['sum', {count: true}], GET_COUNT);
+  useQuery(['numbers', 'count', {ing: 'crows'}], GET_COUNT);
 }
 
 function Count() {

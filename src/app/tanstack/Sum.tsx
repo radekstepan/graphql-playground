@@ -11,7 +11,7 @@ const GET_SUM = `#graphql
 `;
 
 function Sum() {
-  const {data} = useQuery(['sum', {sum: true}], GET_SUM);
+  const {data} = useQuery(['numbers', {sum: 41}], GET_SUM);
 
   return data?.sum.value;
 };
