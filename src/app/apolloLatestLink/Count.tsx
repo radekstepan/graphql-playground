@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import {useQuery} from '@apollo/client';
+import useLatestQuery from './useLatestQuery';
 
 const GET_COUNT = gql`
   query GetCount {
@@ -12,8 +12,11 @@ const GET_COUNT = gql`
 `;
 
 function Count() {
-  useQuery(GET_COUNT, {
-    fetchPolicy: 'cache-first'
+  useLatestQuery(GET_COUNT, {
+    fetchPolicy: 'cache-first',
+    context: {
+      invalidate: ['@sum']
+    }
   });
 
   return null;

@@ -4,7 +4,12 @@ GraphQL client query caching and invalidation playground
 
 ![](example.gif)
 
-## IsLatestLink & useLatestQuery
+## Apollo Client
+
+- allows for direct cache manipulation (limited API)
+- `refetchQueries` only works on watched queries (= queries in rendered components)
+
+## Apollo Client with IsLatestLink & useLatestQuery
 
 ### Constraints
 

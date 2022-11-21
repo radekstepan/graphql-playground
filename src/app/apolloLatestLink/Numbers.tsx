@@ -25,8 +25,9 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
     variables: {
       input
     },
-    // NOTE to show this doesn't work if the query isn't watched.
-    refetchQueries: ['GetSum', 'GetCount'],
+    context: {
+      invalidate: ['@sum']
+    }
   });
 
   useEffect(() => {

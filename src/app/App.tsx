@@ -1,26 +1,17 @@
 import React, {memo, useEffect, useState} from 'react';
-import {ApolloProvider} from '@apollo/client';
-import {QueryClientProvider,} from '@tanstack/react-query'
 import Apollo from './apollo/Apollo';
-import apolloClient from './apollo/client';
+import ApolloLatestLink from './apolloLatestLink/Apollo';
 import TanStack from './tanstack/TanStack';
-import tanstackClient from './tanstack/client';
 import css from './utils/css';
 
 function Content({active}) {
   switch (active) {
     case 0:
-      return (
-        <ApolloProvider client={apolloClient}>
-          <Apollo />
-        </ApolloProvider>    
-      );
+      return <Apollo />;
     case 1:
-      return (
-        <QueryClientProvider client={tanstackClient}>
-          <TanStack />
-        </QueryClientProvider>
-      )
+      return <ApolloLatestLink />;
+    case 2:
+      return <TanStack />;
     default:
       return null
   }
@@ -46,7 +37,11 @@ function App() {
   return (
     <>
       <div className="select">
-        {['Apollo', 'TanStack'].map((d, i) => (
+        {[
+          'Apollo',
+          'Apollo w/ LatestLink',
+          'TanStack'
+        ].map((d, i) => (
           <div key={i}>
             <input
               type="radio"

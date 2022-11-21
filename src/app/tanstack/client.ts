@@ -7,7 +7,7 @@ import {
   useQueryClient
 } from '@tanstack/react-query'
 
-const client = new QueryClient({
+const client = () => new QueryClient({
   defaultOptions: {
     queries: {
       // https://tanstack.com/query/v4/docs/guides/caching

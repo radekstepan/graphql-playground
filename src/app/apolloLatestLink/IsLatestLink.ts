@@ -20,7 +20,7 @@ class IsLatestLink extends ApolloLink {
   // TODO we could save this in Apollo cache.
   // TODO turn to LRU so this doesn't grow too large?
   protected mutations = new Set<string>();
-  protected queries = new Map<string, Set<string>>;
+  protected queries = new Map<string, Set<string>>();
 
   request(operation, forward) {
     const {query} = operation;
@@ -32,7 +32,6 @@ class IsLatestLink extends ApolloLink {
         for (const cacheKey of invalidate) {
           this.mutations.add(cacheKey);
           this.queries.delete(cacheKey);
-          console.log('invalidate', cacheKey);
         }
       }
     }
@@ -74,7 +73,10 @@ class IsLatestLink extends ApolloLink {
 
   // A way to skip using this in tests.
   use() {
+    this.mutations = new Set();
+    this.queries = new Map();
     this.isInUse = true;
+
     return this;
   }
 }
