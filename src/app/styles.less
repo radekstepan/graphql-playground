@@ -3,12 +3,37 @@
   zoom: 1.4;
 }
 
-.header {
+.flash {
+  animation-duration: 500ms;
+  animation-timing-function: ease-in;
+  animation-play-state: running;
+  animation-name: isUpdated;
+
+  @keyframes isUpdated {
+    100% {
+      background-color: #fff;  
+    }
+    0% {
+      background-color: rgb(255, 255, 148);
+    }
+  }
+}
+
+.select {
   margin: 10px 0;
 
-  &:not(:first-child) {
-    margin-top: 30px;
+  .radio, .label {
+    cursor: pointer;
   }
+
+  .radio {
+    margin: 0 4px 0 0;
+    vertical-align: bottom;
+  }
+}
+
+.content {
+  padding: 10px;
 }
 
 .render {
