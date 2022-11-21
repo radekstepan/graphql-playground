@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {useUpdate, useRendersCount} from 'react-use';
-import {QueryClientProvider} from '@tanstack/react-query';
+import {Provider} from 'urql';
 import client from './client';
 import Count from './Count';
 import Numbers from './Numbers';
@@ -38,9 +38,9 @@ function App() {
 
 function Wrapper() {
   return (
-    <QueryClientProvider client={client()}>
+    <Provider value={client()}>
       <App />
-    </QueryClientProvider>
+    </Provider >
   )
 };
 

@@ -1,9 +1,8 @@
 import React, {useEffect, useState, FC} from 'react'
-import {useMutation} from '@apollo/client';
-import gql from 'graphql-tag';
+import {useMutation} from 'urql';
 import css from '../utils/css';
 
-const SAVE_NUMBERS = gql`
+const SAVE_NUMBERS = `#graphql
   mutation SaveNumbers($input: String!) {
     saveNumbers(input: $input) {
       __typename
@@ -21,13 +20,7 @@ interface Props {
 const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
 
-  const [saveNumbers, {data}] = useMutation(SAVE_NUMBERS, {
-    variables: {
-      input
-    },
-    // NOTE to show this doesn't work if the query isn't watched.
-    refetchQueries: ['GetSum', 'GetCount'],
-  });
+  const [{data}, saveNumbers] = useMutation(SAVE_NUMBERS);
 
   useEffect(() => {
     if (data) {
@@ -46,7 +39,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
         setInput(currentTarget.value);
       }}
       onFocus={onFocus}
-      onBlur={() => saveNumbers()}
+      onBlur={() => saveNumbers({input})}
     />
   );
 };

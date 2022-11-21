@@ -11,6 +11,9 @@ GraphQL client query caching and invalidation playground
 
 ## Apollo Client with IsLatestLink & useLatestQuery
 
+✅ addon on top of what we have
+🔶 hacky
+
 ### Constraints
 
 1. A query should not skip cache unless explicitly told to do so
@@ -23,7 +26,19 @@ GraphQL client query caching and invalidation playground
 
 ## [TanStack](https://tanstack.com/query)
 
+✅ most powerful cache control
+🔶 most difficult to migrate to
+
 - can pass [`invalidateQueries`](https://tanstack.com/query/v4/docs/guides/query-invalidation) which can invalidate a query that starts with a key (without immediately re-excuting it unless it's being currently rendered by useQuery)
 	- the key prefixes/matchers are [powerful](https://tanstack.com/query/v4/docs/guides/filters#query-filters)
 - supports time-based [cache expiry](https://tanstack.com/query/v4/docs/guides/caching) meaning it could replace our `useTtlQuery`
 - does NOT come with a data fetching library out of the box (= backend agnostic)
+
+## [urql](https://formidable.com/open-source/urql/)
+
+✅ easier to migrate to with a better cache API
+🔶 we will have to write our own cache invalidation as part of an ["Exchange"](https://formidable.com/open-source/urql/docs/graphcache/) which will be removed from the actually query/mutation
+
+- same(ish) API and approach as Apollo
+- cache management is handled via ["exchanges"](https://formidable.com/open-source/urql/docs/comparison/) which might be easier to extend upon as they cover both caching and what Apollo calls "Links" (= network requests)
+  - [`cache.invalidate`](https://formidable.com/open-source/urql/docs/graphcache/cache-updates/#invalidating-entities) lets us essentialy walk and discard any cache fields

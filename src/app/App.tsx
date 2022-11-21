@@ -2,6 +2,7 @@ import React, {memo, useEffect, useState} from 'react';
 import Apollo from './apollo/Apollo';
 import ApolloLatestLink from './apolloLatestLink/Apollo';
 import TanStack from './tanstack/TanStack';
+import Urql from './urql/Urql';
 import css from './utils/css';
 
 function Content({active}) {
@@ -12,6 +13,8 @@ function Content({active}) {
       return <ApolloLatestLink />;
     case 2:
       return <TanStack />;
+    case 3:
+      return <Urql />;
     default:
       return null
   }
@@ -40,7 +43,8 @@ function App() {
         {[
           'Apollo',
           'Apollo w/ LatestLink',
-          'TanStack'
+          'TanStack',
+          'urql'
         ].map((d, i) => (
           <div key={i}>
             <input

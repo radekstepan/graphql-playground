@@ -1,7 +1,6 @@
-import gql from 'graphql-tag';
-import {useQuery} from '@apollo/client';
+import {useQuery} from 'urql';
 
-const GET_COUNT = gql`
+const GET_COUNT = `#graphql
   query GetCount {
     count {
       __typename
@@ -12,8 +11,9 @@ const GET_COUNT = gql`
 `;
 
 function Count() {
-  useQuery(GET_COUNT, {
-    fetchPolicy: 'cache-first'
+  useQuery({
+    query: GET_COUNT,
+    requestPolicy: 'cache-first',
   });
 
   return null;

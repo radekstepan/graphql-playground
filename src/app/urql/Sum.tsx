@@ -1,7 +1,6 @@
-import gql from 'graphql-tag';
-import {useQuery} from '@apollo/client';
+import {useQuery} from 'urql';
 
-const GET_SUM = gql`
+const GET_SUM = `#graphql
   query GetSum {
     sum {
       __typename
@@ -12,8 +11,9 @@ const GET_SUM = gql`
 `;
 
 function Sum() {
-  const {data} = useQuery(GET_SUM, {
-    fetchPolicy: 'cache-first'
+  const [{data}] = useQuery({
+    query: GET_SUM,
+    requestPolicy: 'cache-first',
   });
 
   return data?.sum.value;
