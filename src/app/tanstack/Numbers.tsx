@@ -1,5 +1,6 @@
 import React, {useEffect, useState, FC} from 'react'
-import {useMutation} from './client';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {gqlClient} from './client';
 import css from '../utils/css';
 
 const SAVE_NUMBERS = `#graphql
@@ -19,14 +20,29 @@ interface Props {
 
 const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
-
-  const {data, mutate: saveNumbers} = useMutation(['numbers'], SAVE_NUMBERS);
+  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
-    if (data) {
+    setHasChanged(true);
+  }, [input]);
+
+  const client = useQueryClient();
+
+  const {data, mutate: saveNumbers} = useMutation({
+    mutationFn: (variables: {input: string}) =>
+      gqlClient.request(SAVE_NUMBERS, variables),
+    // Can do optimistic updates here.
+    onMutate: () => setHasChanged(false),
+    onSuccess: (data, _variables) => {
+      // Invalidate root level queries, like "GetSum".
+      client.invalidateQueries({queryKey: ['numbers']});
+      // Store each result; updates "GetFirst".
+      for (const number of data.saveNumbers) {
+        client.setQueryData(['number', {id: number.id}], {number});
+      }
       onUpdate();
     }
-  }, [data]);
+  });
 
   const error = data && !data.saveNumbers.length;
 
@@ -39,7 +55,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
         setInput(currentTarget.value);
       }}
       onFocus={onFocus}
-      onBlur={() => saveNumbers({input} as any)}
+      onBlur={() => hasChanged && saveNumbers({input})}
     />
   );
 };

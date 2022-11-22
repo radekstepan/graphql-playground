@@ -27,7 +27,7 @@ GraphQL client query caching and invalidation playground
 
 ## [TanStack Query](https://tanstack.com/query) *née React Query*
 
-✅ most powerful cache control
+✅ most powerful cache (and beyond) control, highly composable/extensible
 
 🔶 most difficult to migrate to
 
@@ -35,6 +35,8 @@ GraphQL client query caching and invalidation playground
 	- the key prefixes/matchers are [powerful](https://tanstack.com/query/v4/docs/guides/filters#query-filters)
 - supports time-based [cache expiry](https://tanstack.com/query/v4/docs/guides/caching) meaning it could replace our `useTtlQuery`
 - does NOT come with a data fetching library out of the box (= backend agnostic)
+- supports [optimistic updates](https://tanstack.com/query/v4/docs/guides/optimistic-updates)
+- there is an (experimental) [`broadcastQueryClient`](https://tanstack.com/query/v4/docs/plugins/broadcastQueryClient) that shares state across multiple browser tabs
 
 ## [urql](https://formidable.com/open-source/urql/)
 

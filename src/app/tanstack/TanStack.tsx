@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {useUpdate, useRendersCount} from 'react-use';
 import {QueryClientProvider} from '@tanstack/react-query';
 import client from './client';
-import Count from './Count';
+import First from './First';
 import Numbers from './Numbers';
 import Sum from './Sum';
 
@@ -31,7 +31,7 @@ function App() {
         value={`Render ${count}`}
         onClick={onUpdate}
       />
-      <Count />
+      <First />
     </>
   );
 };

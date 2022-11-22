@@ -3,18 +3,21 @@ type Number = {
   value: number
 }
 
-const data = new Set<Number>();
+const data = new Map<string, Number>();
 
 const resolvers = {
   Query: {
     sum: (): Number => ({
       id: 'SUM',
-      value: Array.from(data).reduce((acc, num) => acc + num.value, 0)
+      value: Array.from(data.values())
+        .reduce((acc, d) => acc + d.value, 0)
     }),
     count: (): Number => ({
       id: 'COUNT',
       value: data.size
-    })
+    }),
+    number: (_root: unknown, args: {id: string}): Number =>
+      data.get(args.id)
   },
   Mutation: {
     saveNumbers: (_root: unknown, args: {input: string}) => {
@@ -27,9 +30,12 @@ const resolvers = {
         .map(d => d.trim())
         .map(parseFloat)
         .filter(d => !Number.isNaN(d))
-        .forEach((value, id) => data.add({id: id.toString(), value}));
+        .forEach((value, id) => {
+          const key = id.toString();
+          data.set(key, {id: key, value})
+        });
       
-      return data;
+      return data.values();
     }
   }
 };

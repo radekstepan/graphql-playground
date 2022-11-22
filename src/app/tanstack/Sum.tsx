@@ -1,4 +1,5 @@
-import {useQuery} from './client';
+import {useQuery} from '@tanstack/react-query'
+import {gqlClient} from './client';
 
 const GET_SUM = `#graphql
   query GetSum {
@@ -11,7 +12,10 @@ const GET_SUM = `#graphql
 `;
 
 function Sum() {
-  const {data} = useQuery(['numbers', {sum: 41}], GET_SUM);
+  const {data} = useQuery(
+    ['numbers', {sum: 41}],
+    () => gqlClient.request(GET_SUM)
+  );
 
   return data?.sum.value;
 };
