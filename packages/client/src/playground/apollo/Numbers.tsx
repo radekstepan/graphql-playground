@@ -1,17 +1,7 @@
 import React, {useEffect, useState, FC} from 'react'
 import {useMutation} from '@apollo/client';
-import gql from 'graphql-tag';
-import css from '../utils/css';
-
-const SAVE_NUMBERS = gql`
-  mutation SaveNumbers($input: String!) {
-    saveNumbers(input: $input) {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import css from '../../utils/css';
+import {SAVE_NUMBERS} from '../../gql';
 
 interface Props {
   onFocus: () => void;
@@ -25,9 +15,8 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
     variables: {
       input
     },
-    context: {
-      invalidate: ['@sum']
-    }
+    // NOTE to show this doesn't work if the query isn't watched.
+    refetchQueries: ['GetSum', 'GetCount'],
   });
 
   useEffect(() => {

@@ -5,10 +5,11 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "6.0.1",
-    "process": "^0.11.10"
+    "lerna": "6.0.1"
   },
   "scripts": {
-    "start": "yarn lerna run start"
+    "start": "yarn lerna run start",
+    "start:client": "cd packages/client && yarn start",
+    "start:server": "cd packages/apollo-server && yarn start"
   }
 }

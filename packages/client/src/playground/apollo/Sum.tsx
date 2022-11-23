@@ -1,22 +1,13 @@
-import gql from 'graphql-tag';
+import React from 'react';
 import {useQuery} from '@apollo/client';
-
-const GET_SUM = gql`
-  query GetSum {
-    sum {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import {GET_SUM} from '../../gql';
 
 function Sum() {
   const {data} = useQuery(GET_SUM, {
     fetchPolicy: 'cache-first'
   });
 
-  return data?.sum.value;
+  return <>data?.sum.value</>;
 };
 
 export default Sum;

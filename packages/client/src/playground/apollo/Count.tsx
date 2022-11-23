@@ -1,15 +1,5 @@
-import gql from 'graphql-tag';
 import {useQuery} from '@apollo/client';
-
-const GET_COUNT = gql`
-  query GetCount {
-    count {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import {GET_COUNT} from '../../gql';
 
 function Count() {
   useQuery(GET_COUNT, {

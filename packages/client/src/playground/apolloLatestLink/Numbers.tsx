@@ -1,16 +1,7 @@
 import React, {useEffect, useState, FC} from 'react'
-import {useMutation} from 'urql';
-import css from '../utils/css';
-
-const SAVE_NUMBERS = `#graphql
-  mutation SaveNumbers($input: String!) {
-    saveNumbers(input: $input) {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import {useMutation} from '@apollo/client';
+import css from '../../utils/css';
+import {SAVE_NUMBERS} from '../../gql';
 
 interface Props {
   onFocus: () => void;
@@ -20,7 +11,14 @@ interface Props {
 const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
 
-  const [{data}, saveNumbers] = useMutation(SAVE_NUMBERS);
+  const [saveNumbers, {data}] = useMutation(SAVE_NUMBERS, {
+    variables: {
+      input
+    },
+    context: {
+      invalidate: ['@sum']
+    }
+  });
 
   useEffect(() => {
     if (data) {
@@ -39,7 +37,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
         setInput(currentTarget.value);
       }}
       onFocus={onFocus}
-      onBlur={() => saveNumbers({input})}
+      onBlur={() => saveNumbers()}
     />
   );
 };

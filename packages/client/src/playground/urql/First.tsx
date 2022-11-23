@@ -1,14 +1,5 @@
 import {useQuery} from 'urql';
-
-const GET_FIRST = `#graphql
-  query GetFirst {
-    number(id: "0") {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import {GET_FIRST} from '../../gql';
 
 function First() {
   const [{data}] = useQuery({

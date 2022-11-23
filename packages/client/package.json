@@ -2,21 +2,23 @@
   "name": "@graphql-playground/client",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "start": "yarn parcel src/index.html"
+    "start": "yarn parcel src/index.html",
+    "gen:schema": "yarn graphql-codegen"
   },
   "devDependencies": {
     "@apollo/client": "3.7.1",
+    "@graphql-codegen/cli": "^2.13.12",
+    "@graphql-codegen/client-preset": "^1.1.4",
     "@parcel/transformer-less": "2.8.0",
     "@tanstack/react-query": "^4.16.1",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@urql/exchange-graphcache": "^5.0.5",
     "graphql-request": "^5.0.0",
-    "graphql-tag": "^2.12.6",
     "parcel": "^2.8.0",
+    "process": "^0.11.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-use": "^17.4.0",

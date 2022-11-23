@@ -1,15 +1,6 @@
-import gql from 'graphql-tag';
+import React from 'react';
 import useLatestQuery from './useLatestQuery';
-
-const GET_SUM = gql`
-  query GetSum {
-    sum {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import {GET_SUM} from '../../gql';
 
 function Sum() {
   const {data} = useLatestQuery(GET_SUM, {
@@ -19,7 +10,7 @@ function Sum() {
     }
   });
 
-  return data?.sum.value;
+  return <>data?.sum.value</>;
 };
 
 export default Sum;

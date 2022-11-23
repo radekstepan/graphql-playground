@@ -1,17 +1,8 @@
 import React, {useEffect, useState, FC} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {gqlClient} from './client';
-import css from '../utils/css';
-
-const SAVE_NUMBERS = `#graphql
-  mutation SaveNumbers($input: String!) {
-    saveNumbers(input: $input) {
-      __typename
-      id
-      value
-    }
-  }
-`;
+import css from '../../utils/css';
+import {SAVE_NUMBERS} from '../../gql';
 
 interface Props {
   onFocus: () => void;

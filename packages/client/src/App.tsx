@@ -1,8 +1,8 @@
 import React, {memo, useEffect, useState} from 'react';
-import Apollo from './apollo/Apollo';
-import ApolloLatestLink from './apolloLatestLink/Apollo';
-import TanStack from './tanstack/TanStack';
-import Urql from './urql/Urql';
+import Apollo from './playground/apollo/Apollo';
+import ApolloLatestLink from './playground/apolloLatestLink/Apollo';
+import TanStack from './playground/tanstack/TanStack';
+import Urql from './playground/urql/Urql';
 import css from './utils/css';
 
 function Content({active}) {
