@@ -45,5 +45,6 @@ GraphQL client query caching and invalidation playground
 🔶 we will have to write our own cache invalidation as part of an ["Exchange"](https://formidable.com/open-source/urql/docs/graphcache/) which won't live with the query/mutation itself
 
 - same(ish) API and approach as Apollo
-- cache management (by default is a document cache but we'd want to use a normalizted cache) is handled via an ["Exchange"](https://formidable.com/open-source/urql/docs/comparison/) which might be easier to extend upon as they cover both caching and what Apollo calls "Links" (= network requests)
+- cache management (by default is a document cache but we'd want to use a normalized cache) is handled via an ["Exchange"](https://formidable.com/open-source/urql/docs/comparison/) which might be easier to extend upon as they cover both caching and what Apollo calls "Links" (= network requests)
   - [`cache.invalidate`](https://formidable.com/open-source/urql/docs/graphcache/cache-updates/#invalidating-entities) lets us essentialy walk and discard any cache fields
+  - writing of the mutation updates and query links can be made easier using [schema awareness](https://formidable.com/open-source/urql/docs/graphcache/schema-awareness/)
