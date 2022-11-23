@@ -8,7 +8,7 @@ function Sum() {
     requestPolicy: 'cache-first',
   });
 
-  return <>data?.sum.value</>;
+  return <>{data?.sum.value}</>;
 };
 
 export default Sum;

@@ -10,7 +10,7 @@ function Sum() {
     }
   });
 
-  return <>data?.sum.value</>;
+  return <>{data?.sum.value}</>;
 };
 
 export default Sum;

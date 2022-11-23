@@ -5,9 +5,16 @@ const config: CodegenConfig = {
   documents: ['src/gql.ts'],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
-    './src/__generated/': {
+    'src/__generated/': {
       preset: 'client',
       plugins: []
+    },
+    'src/__generated/schema.json': {
+      plugins: ['introspection'],
+      config: {
+        descriptions: false,
+        minify: true
+      }
     }
   }
 }

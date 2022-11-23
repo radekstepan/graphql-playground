@@ -1,21 +1,24 @@
 import {createClient, dedupExchange, fetchExchange} from 'urql';
 import {cacheExchange} from '@urql/exchange-graphcache';
-// import schema from '../schema.json';
+import schema from '../../__generated/schema.json';
 
 const client = () => createClient({
   url: 'http://localhost:4000',
   requestPolicy: 'network-only',
   exchanges: [dedupExchange, cacheExchange({
+    // @ts-ignore
+    schema,
     resolvers: {
       Query: {
         // Necessary because GetFirst caches a "null" with no type name.
         // We could also discard "number" field on the mutation.
-        // number(_root, args, _cache, _info) {
-        //   return {
-        //     __typename: 'Number',
-        //     id: args.id
-        //   };
-        // },
+        // Also, passing in schema should have worked...
+        number(_root, args, _cache, _info) {
+          return {
+            __typename: 'Number',
+            id: args.id
+          };
+        },
       }
     },
     updates: {

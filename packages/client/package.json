@@ -11,6 +11,7 @@
     "@apollo/client": "3.7.1",
     "@graphql-codegen/cli": "^2.13.12",
     "@graphql-codegen/client-preset": "^1.1.4",
+    "@graphql-codegen/introspection": "^2.2.1",
     "@parcel/transformer-less": "2.8.0",
     "@tanstack/react-query": "^4.16.1",
     "@types/react": "^18.0.25",
