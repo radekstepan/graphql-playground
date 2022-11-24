@@ -16,7 +16,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
       input
     },
     // NOTE to show this doesn't work if the query isn't watched.
-    refetchQueries: ['GetSum', 'GetCount'],
+    refetchQueries: ['GetSum'],
   });
 
   useEffect(() => {

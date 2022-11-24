@@ -3,6 +3,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {gqlClient} from './client';
 import css from '../../utils/css';
 import {SAVE_NUMBERS} from '../../gql';
+import {SaveNumbersMutationVariables} from '../../__generated/graphql';
 
 interface Props {
   onFocus: () => void;
@@ -20,7 +21,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const client = useQueryClient();
 
   const {data, mutate: saveNumbers} = useMutation({
-    mutationFn: (variables: {input: string}) =>
+    mutationFn: (variables: SaveNumbersMutationVariables) =>
       gqlClient.request(SAVE_NUMBERS, variables),
     // Can do optimistic updates here.
     onMutate: () => setHasChanged(false),

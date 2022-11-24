@@ -1,11 +1,18 @@
 import React, {memo, useEffect, useState} from 'react';
-import Apollo from './playground/apollo/Apollo';
-import ApolloLatestLink from './playground/apolloLatestLink/Apollo';
-import TanStack from './playground/tanstack/TanStack';
-import Urql from './playground/urql/Urql';
+import {request} from 'graphql-request';
+
+import Apollo from './playground/apollo/App';
+import ApolloLatestLink from './playground/apolloLatestLink/App';
+import TanStack from './playground/tanstack/App';
+import Urql from './playground/urql/App';
+
 import css from './utils/css';
+import {SERVER_URL} from './const';
+import {RESET} from './gql';
 
 function Content({active}) {
+  active >= 0 && request(SERVER_URL, RESET);
+
   switch (active) {
     case 0:
       return <Apollo />;
@@ -25,7 +32,7 @@ const ContentM = memo(Content);
 function App() {
   const [flash, setFlash] = useState(false);
   const [active, setActive] = useState(-1);
-  
+
   useEffect(() => {
     if (active === -1) {
       return;

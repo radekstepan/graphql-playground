@@ -5,7 +5,7 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "start": "yarn parcel src/index.html",
-    "gen:schema": "yarn graphql-codegen"
+    "gen:types": "yarn graphql-codegen"
   },
   "devDependencies": {
     "@apollo/client": "3.7.1",

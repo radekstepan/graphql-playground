@@ -1,14 +1,5 @@
 import {graphql} from './__generated';
 
-export const SAVE_NUMBERS = graphql(`#graphql
-  mutation SaveNumbers($input: String!) {
-    saveNumbers(input: $input) {
-      id
-      value
-    }
-  }
-`);
-
 export const GET_SUM = graphql(`#graphql
   query GetSum {
     sum {
@@ -27,11 +18,17 @@ export const GET_NUMBER = graphql(`#graphql
   }
 `);
 
-export const GET_COUNT = graphql(`#graphql
-  query GetCount {
-    count {
+export const SAVE_NUMBERS = graphql(`#graphql
+  mutation SaveNumbers($input: String!) {
+    saveNumbers(input: $input) {
       id
       value
     }
+  }
+`);
+
+export const RESET = graphql(`#graphql
+  mutation Reset {
+    reset
   }
 `);

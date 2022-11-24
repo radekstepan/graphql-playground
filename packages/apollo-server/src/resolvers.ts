@@ -12,10 +12,6 @@ const resolvers = {
       value: Array.from(data.values())
         .reduce((acc, d) => acc + d.value, 0)
     }),
-    count: (): Number => ({
-      id: 'COUNT',
-      value: data.size
-    }),
     number: (_root: unknown, args: {id: string}): Number =>
       data.get(args.id)
   },
@@ -36,6 +32,10 @@ const resolvers = {
         });
       
       return data.values();
+    },
+    reset: () => {
+      data.clear();
+      return true;
     }
   }
 };

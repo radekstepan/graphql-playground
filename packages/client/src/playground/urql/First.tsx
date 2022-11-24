@@ -5,7 +5,7 @@ function First() {
   useQuery({
     query: GET_NUMBER,
     variables: {
-      id: "0"
+      id: '0'
     },
     requestPolicy: 'cache-first',
   });

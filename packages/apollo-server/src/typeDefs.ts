@@ -6,12 +6,12 @@ const typeDefs = `#graphql
 
   type Query {
     sum: Number!
-    count: Number!
     number(id: String!): Number
   }
 
   type Mutation {
     saveNumbers(input: String!): [Number!]!
+    reset: Boolean!
   }
 `;
 
