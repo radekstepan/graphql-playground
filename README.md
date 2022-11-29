@@ -1,6 +1,12 @@
 # graphql-playground
 
-GraphQL client query caching and invalidation playground
+GraphQL client data fetching and caching playground.
+
+Each demo consists of 3 components:
+
+1. `<Numbers>` consists of an input field which expects a comma separated list of numbers that are saved on blur; `mutation SaveNumbers`
+1. `<First>` that fetches the first number saved; `query GetNumber`
+1. `<Sum>` that fetches the sum of the numbers; `query GetSum`
 
 ![](example.gif)
 

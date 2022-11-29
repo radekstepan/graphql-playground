@@ -6,8 +6,7 @@ import {GET_SUM} from '../../queries';
 function Sum() {
   const {data} = useQuery(
     ['numbers', {sum: 41}],
-    () => gqlClient.request(GET_SUM
-      )
+    () => gqlClient.request(GET_SUM)
   );
 
   return <>{data?.sum.value}</>;
