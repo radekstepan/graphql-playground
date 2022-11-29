@@ -8,6 +8,7 @@ GraphQL client query caching and invalidation playground
 
 - allows for direct cache manipulation (limited API)
 - `refetchQueries` only works on watched queries (= queries in rendered components)
+- there are libraries out there to manage cache updates, but they are [hacky](https://github.com/ecerroni/apollo-cache-updater/blob/master/src/index.js#L197-L207)
 
 ## Apollo Client with IsLatestLink & useLatestQuery
 

@@ -1,5 +1,5 @@
 import useLatestQuery from './useLatestQuery';
-import {GET_NUMBER} from '../../gql';
+import {GET_NUMBER} from '../../queries';
 
 function First() {
   useLatestQuery(GET_NUMBER, {

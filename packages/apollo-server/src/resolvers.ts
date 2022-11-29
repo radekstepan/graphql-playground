@@ -31,7 +31,9 @@ const resolvers = {
           data.set(key, {id: key, value})
         });
       
-      return data.values();
+      return {
+        numbers: data.values()
+      };
     },
     reset: () => {
       data.clear();

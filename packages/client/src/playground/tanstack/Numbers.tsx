@@ -2,7 +2,7 @@ import React, {useEffect, useState, FC} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {gqlClient} from './client';
 import css from '../../utils/css';
-import {SAVE_NUMBERS} from '../../gql';
+import {SAVE_NUMBERS} from '../../queries';
 import {SaveNumbersMutationVariables} from '../../__generated/graphql';
 
 interface Props {
@@ -29,14 +29,14 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
       // Invalidate root level queries, like "GetSum".
       client.invalidateQueries({queryKey: ['numbers']});
       // Store each result; updates "GetFirst".
-      for (const number of data.saveNumbers) {
+      for (const number of data.saveNumbers.numbers) {
         client.setQueryData(['number', {id: number.id}], {number});
       }
       onUpdate();
     }
   });
 
-  const error = data && !data.saveNumbers.length;
+  const error = data && !data.saveNumbers.numbers.length;
 
   return (
     <input

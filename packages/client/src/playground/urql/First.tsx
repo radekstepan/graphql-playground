@@ -1,5 +1,5 @@
 import {useQuery} from 'urql';
-import {GET_NUMBER} from '../../gql';
+import {GET_NUMBER} from '../../queries';
 
 function First() {
   useQuery({

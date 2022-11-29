@@ -1,7 +1,7 @@
 import React, {useEffect, useState, FC} from 'react'
 import {useMutation} from '@apollo/client';
 import css from '../../utils/css';
-import {SAVE_NUMBERS} from '../../gql';
+import {SAVE_NUMBERS} from '../../queries';
 
 interface Props {
   onFocus: () => void;
@@ -25,7 +25,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
     }
   }, [data]);
 
-  const error = data && !data.saveNumbers.length;
+  const error = data && !data.saveNumbers.numbers.length;
 
   return (
     <input

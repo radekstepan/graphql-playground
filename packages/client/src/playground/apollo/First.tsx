@@ -1,5 +1,5 @@
 import {useQuery} from '@apollo/client';
-import {GET_NUMBER} from '../../gql';
+import {GET_NUMBER} from '../../queries';
 
 function First() {
   useQuery(GET_NUMBER, {

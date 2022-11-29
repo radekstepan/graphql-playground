@@ -1,6 +1,6 @@
 import React from 'react';
 import useLatestQuery from './useLatestQuery';
-import {GET_SUM} from '../../gql';
+import {GET_SUM} from '../../queries';
 
 function Sum() {
   const {data} = useLatestQuery(GET_SUM, {

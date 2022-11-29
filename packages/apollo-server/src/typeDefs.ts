@@ -4,13 +4,17 @@ const typeDefs = `#graphql
     value: Float!
   }
 
+  type SaveNumbersResponse {
+    numbers: [Number!]!
+  }
+
   type Query {
     sum: Number!
     number(id: String!): Number
   }
 
   type Mutation {
-    saveNumbers(input: String!): [Number!]!
+    saveNumbers(input: String!): SaveNumbersResponse
     reset: Boolean!
   }
 `;

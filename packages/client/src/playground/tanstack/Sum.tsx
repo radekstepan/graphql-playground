@@ -1,7 +1,7 @@
 import React from 'react';
 import {useQuery} from '@tanstack/react-query'
 import {gqlClient} from './client';
-import {GET_SUM} from '../../gql';
+import {GET_SUM} from '../../queries';
 
 function Sum() {
   const {data} = useQuery(

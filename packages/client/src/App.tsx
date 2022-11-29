@@ -8,7 +8,7 @@ import Urql from './playground/urql/App';
 
 import css from './utils/css';
 import {SERVER_URL} from './const';
-import {RESET} from './gql';
+import {RESET} from './queries';
 
 function Content({active}) {
   active >= 0 && request(SERVER_URL, RESET);
