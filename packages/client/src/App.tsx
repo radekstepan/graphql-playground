@@ -3,6 +3,7 @@ import {request} from 'graphql-request';
 
 import Apollo from './playground/apollo/App';
 import ApolloLatestLink from './playground/apolloLatestLink/App';
+import ApolloCachePolicies from './playground/apolloCachePolicies/App';
 import TanStack from './playground/tanstack/App';
 import Urql from './playground/urql/App';
 
@@ -19,9 +20,11 @@ function Content({active}) {
     case 1:
       return <ApolloLatestLink />;
     case 2:
-      return <TanStack />;
+      return <ApolloCachePolicies />;
     case 3:
       return <Urql />;
+    case 4:
+      return <TanStack />;
     default:
       return null
   }
@@ -48,10 +51,11 @@ function App() {
     <>
       <div className="select">
         {[
-          'Vanilla Apollo',
+          'Apollo',
           'Apollo w/ LatestLink',
-          'TanStack Query',
-          'urql'
+          'Apollo w/ ApolloCachePolicies',
+          'urql',
+          'TanStack Query'
         ].map((d, i) => (
           <div key={i}>
             <input
