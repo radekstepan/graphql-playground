@@ -4,9 +4,10 @@ import {GET_SUM} from '../../queries';
 
 function Sum() {
   const {data} = useQuery(GET_SUM, {
-    // Would have to use 'network-only' to always
-    //  show the latest value.
-    fetchPolicy: 'cache-first'
+    // Have to use 'network-only' to always
+    //  show the latest value. Only works
+    //  because the component unmounts.
+    fetchPolicy: 'network-only'
   });
 
   return <>{data?.sum.value}</>;

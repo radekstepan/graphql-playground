@@ -4,7 +4,7 @@ import {request} from 'graphql-request';
 import Apollo from './playground/apollo/App';
 import ApolloLatestLink from './playground/apolloLatestLink/App';
 import ApolloCachePolicies from './playground/apolloCachePolicies/App';
-import TanStack from './playground/tanstack/App';
+import ReactQuery from './playground/reactQuery/App';
 import Urql from './playground/urql/App';
 
 import css from './utils/css';
@@ -24,7 +24,7 @@ function Content({active}) {
     case 3:
       return <Urql />;
     case 4:
-      return <TanStack />;
+      return <ReactQuery />;
     default:
       return null
   }
@@ -55,7 +55,7 @@ function App() {
           'Apollo w/ LatestLink',
           'Apollo w/ ApolloCachePolicies',
           'urql',
-          'TanStack Query'
+          'React Query'
         ].map((d, i) => (
           <div key={i}>
             <input

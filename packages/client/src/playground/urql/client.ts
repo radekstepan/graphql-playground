@@ -7,7 +7,7 @@ const client = () => createClient({
   requestPolicy: 'network-only',
   exchanges: [dedupExchange, cacheExchange({
     // @ts-ignore
-    schema,
+    schema, // TODO fix
     resolvers: {
       Query: {
         // Necessary because GetFirst caches a "null" with no type name.

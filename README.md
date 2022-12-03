@@ -52,7 +52,7 @@ Each demo consists of 3 components:
   - [`cache.invalidate`](https://formidable.com/open-source/urql/docs/graphcache/cache-updates/#invalidating-entities) lets us essentialy walk and discard any cache fields
   - writing of the mutation updates and query links can be made easier using [schema awareness](https://formidable.com/open-source/urql/docs/graphcache/schema-awareness/)
 
-## [TanStack Query](https://tanstack.com/query) *née React Query*
+## [React Query](https://tanstack.com/query) *née TanStack Query*
 
 ✅ most powerful cache (and beyond) control, highly composable/extensible
 
