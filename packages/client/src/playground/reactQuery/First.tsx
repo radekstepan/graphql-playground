@@ -1,4 +1,4 @@
-import'react';
+import React from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {GetNumberQuery} from '../../__generated/graphql';
 
