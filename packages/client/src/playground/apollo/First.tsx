@@ -1,4 +1,4 @@
-import React from 'react';
+import 'react';
 import {useQuery} from '@apollo/client';
 import {GET_NUMBER} from '../../queries';
 

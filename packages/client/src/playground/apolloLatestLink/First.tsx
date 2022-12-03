@@ -1,4 +1,4 @@
-import React from 'react';
+import 'react';
 import useLatestQuery from './useLatestQuery';
 import {GET_NUMBER} from '../../queries';
 

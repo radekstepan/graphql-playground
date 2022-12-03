@@ -14,7 +14,7 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    saveNumbers(input: String!): SaveNumbersResponse
+    saveNumbers(input: String!): SaveNumbersResponse!
     reset: Boolean!
   }
 `;

@@ -17,7 +17,7 @@ export type Scalars = {
 export type Mutation = {
   __typename?: 'Mutation';
   reset: Scalars['Boolean'];
-  saveNumbers?: Maybe<SaveNumbersResponse>;
+  saveNumbers: SaveNumbersResponse;
 };
 
 
@@ -64,7 +64,7 @@ export type SaveNumbersMutationVariables = Exact<{
 }>;
 
 
-export type SaveNumbersMutation = { __typename?: 'Mutation', saveNumbers?: { __typename?: 'SaveNumbersResponse', numbers: Array<{ __typename?: 'Number', id: string, value: number }> } | null };
+export type SaveNumbersMutation = { __typename?: 'Mutation', saveNumbers: { __typename?: 'SaveNumbersResponse', numbers: Array<{ __typename?: 'Number', id: string, value: number }> } };
 
 export type ResetMutationVariables = Exact<{ [key: string]: never; }>;
 
