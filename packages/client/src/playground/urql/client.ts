@@ -1,13 +1,10 @@
 import {createClient, dedupExchange, fetchExchange} from 'urql';
 import {cacheExchange} from '@urql/exchange-graphcache';
-import schema from '../../__generated/schema.json';
 
 const client = () => createClient({
   url: 'http://localhost:4000',
   requestPolicy: 'network-only',
   exchanges: [dedupExchange, cacheExchange({
-    // @ts-ignore
-    schema,
     resolvers: {
       Query: {
         // Necessary because GetFirst caches a "null" with no type name.
