@@ -28,7 +28,8 @@ const client = () => new ApolloClient({
           onWrite: ({modify, evict}) => {
             modify({
               fields: {
-                // NOTE: The item gets evicted
+                // NOTE: The item gets evicted, does not require
+                //  variables to be passed in.
                 sum: (_ref) => {
                   // evict(_ref);
                 }

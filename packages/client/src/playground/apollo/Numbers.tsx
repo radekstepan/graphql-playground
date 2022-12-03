@@ -20,8 +20,11 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
     // Would work for GetNumber though, as long as it's rendered.
     refetchQueries: ['GetSum'],
     onCompleted: () => {
-      // Is private, doesn't have variables.
+      // Is private; doesn't have variables.
       // client.queryManager.getQuery('GetSum');
+
+      // Can't evict by query.
+      // client.cache.evict({query: GET_SUM});
 
       // Won't work if we don't know the variables.
       client.cache.evict({fieldName: 'sum'});
