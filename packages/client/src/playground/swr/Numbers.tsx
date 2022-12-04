@@ -1,9 +1,8 @@
-import React, {useState, FC} from 'react'
+import React, {useState, useEffect, FC} from 'react'
 import {useSWRConfig} from 'swr';
 import {gqlClient} from './client';
-import css from '../../utils/css';
+import {css, useMutation} from '../../utils';
 import {SAVE_NUMBERS} from '../../queries';
-import {SaveNumbersMutation} from '../../__generated/graphql';
 
 interface Props {
   onFocus: () => void;
@@ -14,8 +13,8 @@ const useInvalidate = () => {
   const {cache, mutate} = useSWRConfig();
   return () => {
     const mutations = [];
-    // @ts-ignore
-    for (const [query] of cache) {
+    for (const [query] of cache as Map<string, unknown>) {
+      // Yes, official docs suggests using a regex.
       if (query.match(/GetSum|GetNumber/)) {
         mutations.push(query);
       }
@@ -27,16 +26,19 @@ const useInvalidate = () => {
 
 const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
   const [input, setInput] = useState('');
-  const [data, setData] = useState<SaveNumbersMutation>();
+
+  const [saveNumbers, {data}] = useMutation(() =>
+    gqlClient.request(SAVE_NUMBERS, {input})
+  , [input]);
 
   const invalidate = useInvalidate();
 
-  const saveNumbers = async () => {
-    const res = await gqlClient.request(SAVE_NUMBERS, {input});
-    setData(res);
-    invalidate();
-    onUpdate();
-  };
+  useEffect(() => {
+    if (data) {
+      invalidate();
+      onUpdate();
+    }
+  }, [data])
 
   const error = data && !data.saveNumbers.numbers.length;
 
@@ -49,7 +51,7 @@ const Numbers: FC<Props> = ({onFocus, onUpdate}) => {
         setInput(currentTarget.value);
       }}
       onFocus={onFocus}
-      onBlur={saveNumbers}
+      onBlur={() => saveNumbers()}
     />
   );
 };

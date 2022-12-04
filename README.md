@@ -77,4 +77,4 @@ Each demo consists of 3 components:
 
 ⭐ 25k
 
-Might as well use React Query with a better API.
+🔶 Might as well use React Query with a better API. Discourages direct cache writes and doesn't provide any utils to generate keys etc.

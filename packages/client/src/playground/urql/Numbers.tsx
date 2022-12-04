@@ -1,6 +1,6 @@
 import React, {useEffect, useState, FC} from 'react'
 import {useMutation} from 'urql';
-import css from '../../utils/css';
+import {css} from '../../utils';
 import {SAVE_NUMBERS} from '../../queries';
 
 interface Props {

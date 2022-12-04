@@ -1,7 +1,7 @@
 import React, {useEffect, useState, FC} from 'react'
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {gqlClient} from './client';
-import css from '../../utils/css';
+import {css} from '../../utils';
 import {SAVE_NUMBERS} from '../../queries';
 import {SaveNumbersMutationVariables} from '../../__generated/graphql';
 

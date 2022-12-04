@@ -8,7 +8,7 @@ import Urql from './playground/urql/App';
 import ReactQuery from './playground/reactQuery/App';
 import Swr from './playground/swr/App';
 
-import css from './utils/css';
+import {css} from './utils';
 import {SERVER_URL} from './const';
 import {RESET} from './queries';
 
