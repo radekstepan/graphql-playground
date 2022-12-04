@@ -12,6 +12,8 @@ Each demo consists of 3 components:
 
 ## Apollo Client
 
+⭐ 18k
+
 - allows for direct cache manipulation (limited API)
 - `refetchQueries` only works on watched queries (= queries in rendered components)
 - there are libraries out there to manage cache updates, but they are [hacky](https://github.com/ecerroni/apollo-cache-updater/blob/master/src/index.js#L197-L207)
@@ -34,6 +36,8 @@ Each demo consists of 3 components:
 
 ## [NerdWallet ApolloCachePolicies](https://github.com/NerdWalletOSS/apollo-cache-policies)
 
+⭐ 121
+
 ✅ addon on top of what we have (`InMemoryCache`)
 
 🔶 how much maintenance will this have? what are its bugs?
@@ -42,6 +46,8 @@ Each demo consists of 3 components:
 - [type TTL](https://github.com/NerdWalletOSS/apollo-cache-policies#summary) which would replace our `useTtlQuery`
 
 ## [urql](https://formidable.com/open-source/urql/)
+
+⭐ 8k
 
 ✅ easier to migrate to with a better cache API
 
@@ -54,6 +60,8 @@ Each demo consists of 3 components:
 
 ## [React Query](https://tanstack.com/query) *née TanStack Query*
 
+⭐ 31k
+
 ✅ most powerful cache (and beyond) control, highly composable/extensible
 
 🔶 most difficult to migrate to
@@ -64,3 +72,9 @@ Each demo consists of 3 components:
 - does NOT come with a data fetching library out of the box (= backend agnostic)
 - supports [optimistic updates](https://tanstack.com/query/v4/docs/guides/optimistic-updates)
 - there is an (experimental) [`broadcastQueryClient`](https://tanstack.com/query/v4/docs/plugins/broadcastQueryClient) that shares state across multiple browser tabs
+
+## [SWR](https://swr.vercel.app/)
+
+⭐ 25k
+
+Might as well use React Query with a better API.

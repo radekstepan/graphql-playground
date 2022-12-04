@@ -4,14 +4,15 @@ import {request} from 'graphql-request';
 import Apollo from './playground/apollo/App';
 import ApolloLatestLink from './playground/apolloLatestLink/App';
 import ApolloCachePolicies from './playground/apolloCachePolicies/App';
-import ReactQuery from './playground/reactQuery/App';
 import Urql from './playground/urql/App';
+import ReactQuery from './playground/reactQuery/App';
+import Swr from './playground/swr/App';
 
 import css from './utils/css';
 import {SERVER_URL} from './const';
 import {RESET} from './queries';
 
-function Content({active}) {
+function Content({active}: {active: number}) {
   active >= 0 && request(SERVER_URL, RESET);
 
   switch (active) {
@@ -25,6 +26,8 @@ function Content({active}) {
       return <Urql />;
     case 4:
       return <ReactQuery />;
+    case 5:
+      return <Swr />;
     default:
       return null
   }
@@ -55,7 +58,8 @@ function App() {
           'Apollo w/ LatestLink',
           'Apollo w/ ApolloCachePolicies',
           'urql',
-          'React Query'
+          'React Query',
+          'SWR',
         ].map((d, i) => (
           <div key={i}>
             <input
