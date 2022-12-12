@@ -7,6 +7,7 @@ import ApolloCachePolicies from './playground/apolloCachePolicies/App';
 import Urql from './playground/urql/App';
 import ReactQuery from './playground/reactQuery/App';
 import Swr from './playground/swr/App';
+import ApolloReactQuery from './playground/apolloReactQuery/App';
 
 import {css} from './utils';
 import {SERVER_URL} from './const';
@@ -28,6 +29,8 @@ function Content({active}: {active: number}) {
       return <ReactQuery />;
     case 5:
       return <Swr />;
+    case 6:
+      return <ApolloReactQuery />;
     default:
       return null
   }
@@ -60,6 +63,7 @@ function App() {
           'urql',
           'React Query',
           'SWR',
+          'Apollo w/ React Query'
         ].map((d, i) => (
           <div key={i}>
             <input

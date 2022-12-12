@@ -8,3 +8,19 @@ The high level idea is to normalize types/objects in RQ the same way as in Apoll
   - Extend RQ `QueryCache` and use it inside these custom hooks to normalize all types/objects returned from queries
   - Use query name and vars as a root RQ `queryKey`, but allow for it to be overriden
 3. Switch leaf queries to use RQ while relying on custom `QueryCache` populated by Apollo still
+
+## Snippets
+
+Apollo watch query on cache write.
+
+```js
+cache.watch({
+  query: GET_SUM,
+  optimistic: false,
+  callback(diff) {
+    if (diff.complete) {
+      console.log(diff.result);
+    }
+  },
+});
+```
