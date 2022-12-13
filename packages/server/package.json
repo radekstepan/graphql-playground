@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.1.1",
+    "@graphql-tools/merge": "^8.3.14",
     "concurrently": "^7.5.0",
     "graphql": "^16.6.0",
     "nodemon": "^2.0.20",

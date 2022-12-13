@@ -25,23 +25,27 @@ export class ARQCache extends InMemoryCache {
       const value = obj[key];
 
       if (value && typeof value === 'object') {
+        const childRef = this.walk(value);
+
         // TODO queries and array element order
         // TODO _ref
         // TODO merge types (policy)
-        const {__typename: type} = value;
-        // const ref = this.identify(value);
-        if (type) {
+        const ref = this.identify(value);
+        if (ref) {
+          const {__typename: type} = value;
           // const x = canonicalStringify(value);
           // const x = this.policies.getTypePolicy(value.__typename);
           // @ts-ignore accessing private config.
           const pol = this.policies.config.typePolicies[type];
           const keyFields = getKeyFields(value, pol?.keyFields);
           if (keyFields.length) {
-            reactQueryClient.setQueryData([type, Object.fromEntries(keyFields)], value);
+            reactQueryClient.setQueryData(
+              [type, Object.fromEntries(keyFields)],
+              childRef ? {__ref: childRef} : value
+            );
           }
+          return ref;
         }
-
-        this.walk(value);
       }
     }
   }

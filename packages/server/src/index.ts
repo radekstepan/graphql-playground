@@ -1,14 +1,20 @@
 import {ApolloServer} from '@apollo/server';
 import {startStandaloneServer} from '@apollo/server/standalone';
-import typeDefs from './typeDefs.js';
-import resolvers from './resolvers.js';
+import {mergeTypeDefs, mergeResolvers} from '@graphql-tools/merge';
+
+import numbers from './numbers/index.js';
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  typeDefs: mergeTypeDefs([
+    numbers.typeDefs
+  ]),
+  resolvers: mergeResolvers([
+    numbers.resolvers
+  ])
 });
 
 const {url} = await startStandaloneServer(server, {
+  context: async () => ({}) as any,
   listen: {port: 4000},
 });
 
