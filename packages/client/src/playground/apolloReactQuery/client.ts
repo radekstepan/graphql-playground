@@ -14,7 +14,13 @@ export const reset = () => {
     link: from([
       new HttpLink({uri: URI})
     ]),
-    cache: new ARQCache(),
+    cache: new ARQCache({
+      typePolicies: {
+        Number: {
+          keyFields: ['id']
+        }
+      }
+    }),
     defaultOptions: {
       query: {
         fetchPolicy: 'network-only'
