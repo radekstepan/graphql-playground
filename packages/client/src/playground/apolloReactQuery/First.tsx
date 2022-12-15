@@ -1,7 +1,6 @@
 import React from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {Number} from '../../__generated/graphql';
-import './arqCache';
 
 function First() {
   const client = useQueryClient();

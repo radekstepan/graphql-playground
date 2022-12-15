@@ -7,12 +7,14 @@ const documents = {
     "#graphql\n  query GetNumber($id: String!) {\n    number(id: $id) {\n      id\n      value\n    }\n  }\n": types.GetNumberDocument,
     "#graphql\n  mutation SaveNumbers($input: String!) {\n    saveNumbers(input: $input) {\n      numbers {\n        id\n        value\n      }\n    }\n  }\n": types.SaveNumbersDocument,
     "#graphql\n  mutation Reset {\n    reset\n  }\n": types.ResetDocument,
+    "#graphql\n  query GetExpenses {\n    employee {\n      id\n      reports {\n        id\n        expenses {\n          id\n        }\n      }\n    }\n  }\n": types.GetExpensesDocument,
 };
 
 export function graphql(source: "#graphql\n  query GetSum {\n    sum {\n      id\n      value\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetSum {\n    sum {\n      id\n      value\n    }\n  }\n"];
 export function graphql(source: "#graphql\n  query GetNumber($id: String!) {\n    number(id: $id) {\n      id\n      value\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetNumber($id: String!) {\n    number(id: $id) {\n      id\n      value\n    }\n  }\n"];
 export function graphql(source: "#graphql\n  mutation SaveNumbers($input: String!) {\n    saveNumbers(input: $input) {\n      numbers {\n        id\n        value\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  mutation SaveNumbers($input: String!) {\n    saveNumbers(input: $input) {\n      numbers {\n        id\n        value\n      }\n    }\n  }\n"];
 export function graphql(source: "#graphql\n  mutation Reset {\n    reset\n  }\n"): (typeof documents)["#graphql\n  mutation Reset {\n    reset\n  }\n"];
+export function graphql(source: "#graphql\n  query GetExpenses {\n    employee {\n      id\n      reports {\n        id\n        expenses {\n          id\n        }\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetExpenses {\n    employee {\n      id\n      reports {\n        id\n        expenses {\n          id\n        }\n      }\n    }\n  }\n"];
 
 export function graphql(source: string): unknown;
 export function graphql(source: string) {

@@ -34,3 +34,17 @@ export const RESET = graphql(`#graphql
     reset
   }
 `);
+
+export const GET_EXPENSES = graphql(`#graphql
+  query GetExpenses {
+    employee {
+      id
+      reports {
+        id
+        expenses {
+          id
+        }
+      }
+    }
+  }
+`);

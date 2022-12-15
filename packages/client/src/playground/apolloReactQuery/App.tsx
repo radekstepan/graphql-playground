@@ -6,6 +6,7 @@ import {apolloClient, reactQueryClient, reset} from './client';
 import First from './First';
 import Numbers from './Numbers';
 import Sum from './Sum';
+import Expenses from './Expenses';
 
 function App() {
   const [showSum, setShowSum] = useState(false);
@@ -33,6 +34,7 @@ function App() {
         onClick={onUpdate}
       />
       <First />
+      <Expenses />
     </>
   );
 };

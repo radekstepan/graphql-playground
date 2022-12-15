@@ -3,13 +3,16 @@ import {startStandaloneServer} from '@apollo/server/standalone';
 import {mergeTypeDefs, mergeResolvers} from '@graphql-tools/merge';
 
 import numbers from './numbers/index.js';
+import expense from './expense/index.js';
 
 const server = new ApolloServer({
   typeDefs: mergeTypeDefs([
-    numbers.typeDefs
+    numbers.typeDefs,
+    expense.typeDefs
   ]),
   resolvers: mergeResolvers([
-    numbers.resolvers
+    numbers.resolvers,
+    expense.resolvers
   ])
 });
 
