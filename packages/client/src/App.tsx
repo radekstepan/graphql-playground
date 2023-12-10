@@ -4,6 +4,7 @@ import {request} from 'graphql-request';
 import Apollo from './playground/apollo/App';
 import ApolloLatestLink from './playground/apolloLatestLink/App';
 import ApolloCachePolicies from './playground/apolloCachePolicies/App';
+import ApolloUseLazyQuery from './playground/apolloUseLazyQuery/App';
 import Urql from './playground/urql/App';
 import ReactQuery from './playground/reactQuery/App';
 import Swr from './playground/swr/App';
@@ -31,6 +32,8 @@ function Content({active}: {active: number}) {
       return <Swr />;
     case 6:
       return <ApolloReactQuery />;
+    case 7:
+      return <ApolloUseLazyQuery />;
     default:
       return null
   }
@@ -63,7 +66,8 @@ function App() {
           'urql',
           'React Query',
           'SWR',
-          'Apollo w/ React Query'
+          'Apollo w/ React Query',
+          'Apollo useLazyQuery'
         ].map((d, i) => (
           <div key={i}>
             <input
