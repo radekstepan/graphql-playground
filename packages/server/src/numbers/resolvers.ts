@@ -1,9 +1,4 @@
-type Number = {
-  id: string
-  value: number
-}
-
-const data = new Map<string, Number>();
+import {numbers as data, type Number} from '../data.js';
 
 const resolvers = {
   Query: {
@@ -34,10 +29,6 @@ const resolvers = {
       return {
         numbers: data.values()
       };
-    },
-    reset: () => {
-      data.clear();
-      return true;
     }
   }
 };

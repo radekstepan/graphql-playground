@@ -9,6 +9,7 @@ import Urql from './playground/urql/App';
 import ReactQuery from './playground/reactQuery/App';
 import Swr from './playground/swr/App';
 import ApolloReactQuery from './playground/apolloReactQuery/App';
+import ReactQueryRacoon from './playground/reactQueryRacoon/App';
 
 import {css} from './utils';
 import {SERVER_URL} from './const';
@@ -34,6 +35,8 @@ function Content({active}: {active: number}) {
       return <ApolloReactQuery />;
     case 7:
       return <ApolloUseLazyQuery />;
+    case 8:
+      return <ReactQueryRacoon />;
     default:
       return null
   }
@@ -67,7 +70,8 @@ function App() {
           'React Query',
           'SWR',
           'Apollo w/ React Query',
-          'Apollo useLazyQuery'
+          'Apollo useLazyQuery',
+          'React Query (Racoon)'
         ].map((d, i) => (
           <div key={i}>
             <input
@@ -78,7 +82,10 @@ function App() {
               checked={active === i}
               onChange={() => setActive(i)}
             />
-            <label className="label" onClick={() => setActive(i)}>{d}</label>
+            <label className="label" onClick={() => {
+              setActive(i);
+              document.title = d;
+              }}>{d}</label>
           </div>
         ))}
       </div>
