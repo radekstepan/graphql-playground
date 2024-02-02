@@ -6,7 +6,9 @@ import ReportTotals from './components/ReportTotals';
 import Exceptions from './components/Exceptions';
 import Entry from './components/Entry';
 import Receipt from './components/Receipt';
-import { ReportDataProvider } from './providers/ReportDataProvider';
+import Loading from './components/Loading';
+import {AtomStateProvider} from './providers/AtomStateProvider';
+import {ReportDataProvider} from './providers/ReportDataProvider';
 import './styles.less'
 
 function App() {
@@ -24,6 +26,9 @@ function App() {
           <Entry />
           <Receipt />
         </div>
+        <div className="section">
+          <Loading />
+        </div>
       </ReportDataProvider>
     </div>
   );
@@ -31,9 +36,11 @@ function App() {
 
 function Wrapper() {
   return (
-    <QueryClientProvider client={client()}>
-      <App />
-    </QueryClientProvider>
+    <AtomStateProvider>
+      <QueryClientProvider client={client()}>
+        <App />
+      </QueryClientProvider>
+    </AtomStateProvider>
   )
 };
 

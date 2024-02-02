@@ -1,9 +1,11 @@
-import React, { type FC, type ReactNode, createContext, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {type FC, type ReactNode, createContext, useCallback, useEffect, useMemo, useRef} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import debounce from 'debounce';
 import {gqlClient} from '../client';
+import {loadingAtom} from '../atoms/loadingAtom';
 import {GET_RACOON_REPORT, UPDATE_RACOON_ENTRY, UPDATE_RACOON_RECEIPT} from '../../../queries';
-import { type GetRacoonReportQuery } from '../../../__generated/graphql';
+import {type GetRacoonReportQuery} from '../../../__generated/graphql';
+import { useAtom } from '../hooks/useAtom';
 
 type ReportDataType = GetRacoonReportQuery['racoon']['report'];
 // The data fragments that we can request from the server.
@@ -61,8 +63,6 @@ export const ReportDataContext = createContext<ReportData>(defaultValue);
 /**
  * The provider that fetches the report data (and its fragments) and provides the data to the components.
  * TODO:
- * - Loading state
- * - Error state
  * - Is it OK that data is fetched potentially for a component that is unmounted? Apollo would just ignore the result.
  * - Should we concatenate the GQL instead of passing booleans to the query? This would impact how we write tests.
  * - Check if graphql-request uses an AbortController under the hood for when we navigate away from the page.
@@ -76,6 +76,8 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
   // Track if there's a request in flight and if there's a queued request.
   const isReqInFlightRef = useRef(false);
   const isReqQueued = useRef(false);
+
+  const [, setIsLoading] = useAtom(loadingAtom);
 
   // Mark all fragments as stale and request we fetch them.
   const isStaleRef = useRef<Record<DataFragment, DataStatus>>({
@@ -129,8 +131,10 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
       return;
     }
     isReqInFlightRef.current = true;
+    setIsLoading(true);
     refetchReport().finally(() => {
       isReqInFlightRef.current = false;
+      setIsLoading(false);
       // Trigger any queued requests.
       if (isReqQueued.current && isMounted.current) {
         isReqQueued.current = false;
@@ -155,8 +159,10 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
 
   // Mutate the report entry (amount ++).
   const {mutate: updateEntry} = useMutation({
-    mutationFn: () =>
-      gqlClient.request(UPDATE_RACOON_ENTRY),
+    mutationFn: () => {
+      setIsLoading(true);
+      return gqlClient.request(UPDATE_RACOON_ENTRY);
+    },
     onSuccess: () => {
       isStaleRef.current.totalAmount = DataStatus.STALE;
       isStaleRef.current.expenses = DataStatus.STALE;
@@ -168,8 +174,10 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
 
   // Mutate the report receipt (attach/detach).
   const {mutate: updateReceipt} = useMutation({
-    mutationFn: () =>
-      gqlClient.request(UPDATE_RACOON_RECEIPT),
+    mutationFn: () => {
+      setIsLoading(true);
+      return gqlClient.request(UPDATE_RACOON_RECEIPT);
+    },
     onSuccess: () => {
       isStaleRef.current.exceptions = DataStatus.STALE;
       isStaleRef.current.expenses = DataStatus.STALE;

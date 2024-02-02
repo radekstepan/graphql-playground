@@ -1,7 +1,7 @@
-import { useContext } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { KEYS, ReportDataContext, type KeyFunction } from "../providers/ReportDataProvider";
-import { type RacoonReport } from "../../../__generated/graphql";
+import {useContext} from "react";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {KEYS, ReportDataContext, type KeyFunction} from "../providers/ReportDataProvider";
+import {type RacoonReport} from "../../../__generated/graphql";
 
 export const useReportData = () => useContext(ReportDataContext);
 
@@ -10,6 +10,7 @@ function useGenericReportData<T>(reportId: string, keyFunction: KeyFunction): T 
   const client = useQueryClient();
   const key = keyFunction(reportId);
 
+  // TODO loading state and error handling.
   const { data } = useQuery(
     key,
     () => {
