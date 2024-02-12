@@ -42,8 +42,8 @@ const defaultValue = {
   updateReceipt: noop
 };
 
+// Keys functions for our fragments.
 export const KEYS: Record<string, KeyFunction> = {
-  getReport: (reportId: string) => ['racoon', {report: reportId}],
   getReportName: (reportId: string) => ['racoon', {report: reportId, name: true}],
   getReportTotalAmount: (reportId: string) => ['racoon', {report: reportId, totalAmount: true}],
   getReportExceptions: (reportId: string) => ['racoon', {report: reportId, exceptions: true}],
@@ -89,7 +89,7 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
 
   // Main query that fetches the report data and its fragments.
   const {refetch: refetchReport} = useQuery({
-    queryKey: KEYS.getReport(reportId),
+    queryKey: [`$GetReport:${reportId}`], // <-- ignore this key
     // Fetch the report's requested fragments.
     queryFn: () => gqlClient.request(GET_RACOON_REPORT, {
       includeName: isStaleRef.current.name === DataStatus.REQUESTED,

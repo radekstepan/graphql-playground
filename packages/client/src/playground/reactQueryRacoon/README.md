@@ -19,3 +19,17 @@ An example "report" page that has an exceptions and an entry component. The entr
 1. `react-query` for query and cache management
 2. `react-graphql` for actual GQL calls
 3. `jotai` for state management (homebrew in this example)
+
+## TODO
+
+1. Structural sharing to merge old and new data?
+1. A separate `EntryProvider`, does it live in the dom for each separate entry?
+1. What query interface do we use for shared packages; `await query` or `useQuery`?
+1. If we need to `await query`, how can you determine when your query is loading when you are a fragment part of a larger query? Modify the hooks to look like existing `useQuery` hooks
+1. Modify the GQL to return individual exceptions exceptions: `[{entryId: 123, text: "Missing receipt!"}]` and each entry row will ask for it like so `getEntryExceptions(reportId, 123)`
+1. When you attach/detach receipt or update the entry amount, refetch just the entry and not all expenses
+1. Have 2 expenses, start at $1; have GetExpense have an actually useful key that writes to a cache directly
+1. Modify report next to "Monthly expenses" akin to report header refetches all entries BUT not their receipts (`@include` on receipt)
+1. Add a comment to add a utility function to help with marking data as stale
+1. Nest the expenses key better to illustrate they won't be reset when the "parent" resets
+1. Does `react-query` do cache by ref when we have both `expenses` and `expense` cached?
