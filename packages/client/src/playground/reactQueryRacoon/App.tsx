@@ -4,8 +4,7 @@ import client from './client';
 import ReportName from './components/ReportName';
 import ReportTotals from './components/ReportTotals';
 import Exceptions from './components/Exceptions';
-import Entry from './components/Entry';
-import Receipt from './components/Receipt';
+import Entries from './components/Entries';
 import Loading from './components/Loading';
 import {AtomStateProvider} from './providers/AtomStateProvider';
 import {ReportDataProvider} from './providers/ReportDataProvider';
@@ -22,9 +21,8 @@ function App() {
         <div>
           <Exceptions />
         </div>
-        <div className="flex section">
-          <Entry />
-          <Receipt />
+        <div className="section">
+          <Entries reportId="REP_1" />
         </div>
         <div className="section">
           <Loading />

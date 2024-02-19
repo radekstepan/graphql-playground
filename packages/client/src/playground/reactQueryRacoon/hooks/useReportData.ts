@@ -1,19 +1,20 @@
 import {useContext} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {KEYS, ReportDataContext, type KeyFunction} from "../providers/ReportDataProvider";
+import {ReportDataContext} from "../providers/ReportDataProvider";
+import {keys, type ReportKeyFunction} from "../keys";
 import {type RacoonReport} from "../../../__generated/graphql";
 
 export const useReportData = () => useContext(ReportDataContext);
 
-function useGenericReportData<T>(reportId: string, keyFunction: KeyFunction): T | null {
-  const { requestData } = useContext(ReportDataContext);
+function useGenericReadReportData<T>(keyFunction: ReportKeyFunction): T | undefined {
+  const { reportId, requestData } = useContext(ReportDataContext);
   const client = useQueryClient();
   const key = keyFunction(reportId);
 
   // TODO loading state and error handling.
   const { data } = useQuery(
     key,
-    () => {
+    async () => {
       // Signal that data is requested.
       requestData(key);
       // Get the data from the cache.
@@ -21,11 +22,11 @@ function useGenericReportData<T>(reportId: string, keyFunction: KeyFunction): T 
     }
   );
 
-  return data ?? null;
+  return data ?? undefined;
 }
 
 // Data access hooks for the report data fragments.
-export const useReportDataName = (reportId: string) => useGenericReportData<string>(reportId, KEYS.getReportName);
-export const useReportDataTotalAmount = (reportId: string) => useGenericReportData<number>(reportId, KEYS.getReportTotalAmount);
-export const useReportDataExceptions = (reportId: string) => useGenericReportData<RacoonReport['exceptions']>(reportId, KEYS.getReportExceptions);
-export const useReportDataExpenses = (reportId: string) => useGenericReportData<RacoonReport['expenses']>(reportId, KEYS.getReportExpenses);
+export const useReadReportNameData = () => useGenericReadReportData<RacoonReport['name']>(keys.report.getReportName);
+export const useReadReportTotalAmountData = () => useGenericReadReportData<RacoonReport['totalAmount']>(keys.report.getReportTotalAmount);
+export const useReadReportExceptionsData = () => useGenericReadReportData<RacoonReport['exceptions']>(keys.report.getReportExceptions);
+export const useReadReportEntriesData = () => useGenericReadReportData<RacoonReport['entries']>(keys.report.getReportEntries);

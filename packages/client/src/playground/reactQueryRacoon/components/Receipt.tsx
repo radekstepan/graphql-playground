@@ -1,17 +1,19 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportData, useReportDataExpenses } from '../hooks/useReportData';
+import { useEntryData, useReadEntryReceiptData } from '../hooks/useEntryData';
 
 const Receipt = () => {
   const componentRef = useFlashOnRender();
-  const {updateReceipt} = useReportData();
-  const expenses = useReportDataExpenses('REP_1');
+  const {entryId, updateEntryReceipt} = useEntryData();
+  const receipt = useReadEntryReceiptData();
 
   return (
     <div ref={componentRef} className="component">
-      {expenses !== null && (
-        <input type="button" value={expenses[0].receipt ? 'Detach Receipt' : 'Attach Receipt'} onClick={updateReceipt} />
-      )}
+      <input
+        type="button"
+        value={receipt ? 'Detach Receipt' : 'Attach Receipt'}
+        onClick={() => updateEntryReceipt({id: entryId})}
+      />
     </div>
   );
 };

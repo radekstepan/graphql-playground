@@ -1,10 +1,10 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportDataName } from '../hooks/useReportData';
+import { useReadReportNameData } from '../hooks/useReportData';
 
 const ReportName = () => {
   const componentRef = useFlashOnRender();
-  const name = useReportDataName('REP_1');
+  const name = useReadReportNameData();
 
   return (
     <div ref={componentRef} className="component">

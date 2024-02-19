@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportDataExceptions } from '../hooks/useReportData';
+import { useReadReportExceptionsData } from '../hooks/useReportData';
 
 const Exceptions = () => {
   const componentRef = useFlashOnRender();
-  const exceptions = useReportDataExceptions('REP_1');
+  const exceptions = useReadReportExceptionsData();
+
+  // TODO read exceptions off a separate key like entries.
 
   return (
     <div ref={componentRef} className="component">
-      {exceptions !== null && !exceptions.length && 'No exceptions'}
-      {exceptions !== null && exceptions.map((exception, index) => (
+      {!exceptions?.length && 'No exceptions'}
+      {exceptions?.map((exception, index) => (
         <div key={index}>{exception}</div>
       ))}
     </div>
@@ -20,7 +22,11 @@ const ShowExceptions = () => {
   const [show, setShow] = useState(true);
   return (
     <div className="section">
-      <input type="button" value={show ? 'Hide Exceptions' : 'Show Exceptions'} onClick={() => setShow(prev => !prev)} />
+      <input
+        type="button"
+        value={show ? 'Hide Exceptions' : 'Show Exceptions'}
+        onClick={() => setShow(prev => !prev)}
+      />
       {show && <Exceptions />}
     </div>
   );

@@ -1,17 +1,17 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportData, useReportDataExpenses } from '../hooks/useReportData';
+import { useEntryData, useReadEntryAmountData } from '../hooks/useEntryData';
 
 const Entry = () => {
   const componentRef = useFlashOnRender();
-  const {updateEntry} = useReportData();
-  const expenses = useReportDataExpenses('REP_1');
+  const {entryId, updateEntryAmount} = useEntryData();
+  const amount = useReadEntryAmountData();
 
   return (
     <div ref={componentRef} className="component">
       Entry
-      {expenses !== null && (
-        <input type="button" value={`$${expenses[0].amount}`} onClick={updateEntry} />
+      {amount !== undefined && (
+        <input type="button" value={`$${amount}`} onClick={() => updateEntryAmount({id: entryId})} />
       )}
     </div>
   );

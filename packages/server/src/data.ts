@@ -10,7 +10,7 @@ interface Racoon {
   name: string
   totalAmount: number
   exceptions: string[]
-  expenses: {
+  entries: {
     id: string
     amount: number
     receipt: string | null
@@ -21,18 +21,24 @@ interface Racoon {
 export const racoon: Racoon = {
   id: 'REP_1',
   name: "Monthly Expenses",
-  totalAmount: 0,
-  exceptions: ['Missing receipt!'],
-  expenses: [{
+  totalAmount: 2,
+  exceptions: ['Missing receipt!', 'Missing receipt!'],
+  entries: [{
     id: "EXP_1",
-    amount: 0,
+    amount: 1,
+    receipt: null
+  }, {
+    id: "EXP_2",
+    amount: 1,
     receipt: null
   }],
   reset() {
-    this.totalAmount = 0;
-    this.exceptions = ['Missing receipt!'];
-    this.expenses[0].amount = 0;
-    this.expenses[0].receipt = null;
+    this.totalAmount = 2;
+    this.exceptions = ['Missing receipt!', 'Missing receipt!'];
+    this.entries[0].amount = 1;
+    this.entries[0].receipt = null;
+    this.entries[1].amount = 1;
+    this.entries[1].receipt = null;
   }
 };
 

@@ -1,5 +1,5 @@
 const typeDefs = `#graphql
-  type RacoonExpense {
+  type RacoonEntry {
     id: String!
     amount: Int!
     receipt: String
@@ -10,11 +10,12 @@ const typeDefs = `#graphql
     name: String!
     totalAmount: Int!
     exceptions: [String!]!
-    expenses: [RacoonExpense!]!
+    entries: [RacoonEntry!]!
   }
 
   type Racoon {
     report: RacoonReport!
+    entry(id: String!): RacoonEntry!
   }
 
   type Query {
@@ -26,8 +27,8 @@ const typeDefs = `#graphql
   }
 
   type RacoonMutation {
-    updateEntry: Ok!
-    updateReceipt: Ok!
+    updateEntryAmount(id: String!): Ok!
+    updateEntryReceipt(id: String!): Ok!
   }
 
   type Mutation {

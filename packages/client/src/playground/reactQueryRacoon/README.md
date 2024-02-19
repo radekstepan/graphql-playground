@@ -22,14 +22,13 @@ An example "report" page that has an exceptions and an entry component. The entr
 
 ## TODO
 
-1. Structural sharing to merge old and new data?
-1. A separate `EntryProvider`, does it live in the dom for each separate entry?
 1. What query interface do we use for shared packages; `await query` or `useQuery`?
 1. If we need to `await query`, how can you determine when your query is loading when you are a fragment part of a larger query? Modify the hooks to look like existing `useQuery` hooks
 1. Modify the GQL to return individual exceptions exceptions: `[{entryId: 123, text: "Missing receipt!"}]` and each entry row will ask for it like so `getEntryExceptions(reportId, 123)`
-1. When you attach/detach receipt or update the entry amount, refetch just the entry and not all expenses
-1. Have 2 expenses, start at $1; have GetExpense have an actually useful key that writes to a cache directly
 1. Modify report next to "Monthly expenses" akin to report header refetches all entries BUT not their receipts (`@include` on receipt)
 1. Add a comment to add a utility function to help with marking data as stale
-1. Nest the expenses key better to illustrate they won't be reset when the "parent" resets
-1. Does `react-query` do cache by ref when we have both `expenses` and `expense` cached?
+
+## Learnings
+
+1. If you have multiple `useQuery` hooks with the same key, you can't guarantee in which order they get called and React Query will just call one of the callbacks, rather than both. It makes sense that it would deduplicate these calls, but there's no `useWatchQuery`, so you can only have one `useQuery` unique key combo. This became a problem as I both want to use `useQuery` hooks to read data off a key, and also to "subscribe" when a particular key is invalidated elsewhere in the code. The fix is to use an "internal" key suffix in one of the hooks...
+1. `react-query` does not create any references between data in a cache. If you need to store a list of data, a strategy is to create 2 new keys: `byId` and store a list of objects in by their `id` for easy access and `order` to store the actual order of the `ids`.
