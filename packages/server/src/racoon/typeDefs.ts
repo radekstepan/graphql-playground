@@ -3,13 +3,19 @@ const typeDefs = `#graphql
     id: String!
     amount: Int!
     receipt: String
+    exceptions: [RacoonException!]!
+  }
+
+  type RacoonException {
+    entryId: String!
+    text: String!
   }
 
   type RacoonReport {
     id: String!
     name: String!
     totalAmount: Int!
-    exceptions: [String!]!
+    exceptions: [RacoonException!]!
     entries: [RacoonEntry!]!
   }
 

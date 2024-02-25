@@ -14,7 +14,7 @@ function useGenericReadReportData<T>(keyFunction: ReportKeyFunction): T | undefi
   // TODO loading state and error handling.
   const { data } = useQuery(
     key,
-    async () => {
+    () => {
       // Signal that data is requested.
       requestData(key);
       // Get the data from the cache.

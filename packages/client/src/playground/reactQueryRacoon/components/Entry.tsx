@@ -9,7 +9,7 @@ const Entry = () => {
 
   return (
     <div ref={componentRef} className="component">
-      Entry
+      {entryId}
       {amount !== undefined && (
         <input type="button" value={`$${amount}`} onClick={() => updateEntryAmount({id: entryId})} />
       )}

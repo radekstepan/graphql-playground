@@ -32,3 +32,7 @@ An example "report" page that has an exceptions and an entry component. The entr
 
 1. If you have multiple `useQuery` hooks with the same key, you can't guarantee in which order they get called and React Query will just call one of the callbacks, rather than both. It makes sense that it would deduplicate these calls, but there's no `useWatchQuery`, so you can only have one `useQuery` unique key combo. This became a problem as I both want to use `useQuery` hooks to read data off a key, and also to "subscribe" when a particular key is invalidated elsewhere in the code. The fix is to use an "internal" key suffix in one of the hooks...
 1. `react-query` does not create any references between data in a cache. If you need to store a list of data, a strategy is to create 2 new keys: `byId` and store a list of objects in by their `id` for easy access and `order` to store the actual order of the `ids`.
+
+## Other Ideas
+
+1. This (not very popular) library merge GQL queries together into one https://github.com/domasx2/graphql-combine-query - this would help by maintaining separate queries rather than fragments.

@@ -3,7 +3,7 @@ import {QueryClientProvider} from '@tanstack/react-query';
 import client from './client';
 import ReportName from './components/ReportName';
 import ReportTotals from './components/ReportTotals';
-import Exceptions from './components/Exceptions';
+import ReportExceptions from './components/ReportExceptions';
 import Entries from './components/Entries';
 import Loading from './components/Loading';
 import {AtomStateProvider} from './providers/AtomStateProvider';
@@ -19,7 +19,7 @@ function App() {
           <ReportTotals />
         </div>
         <div>
-          <Exceptions />
+          <ReportExceptions />
         </div>
         <div className="section">
           <Entries reportId="REP_1" />

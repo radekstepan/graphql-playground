@@ -61,7 +61,10 @@ export const GET_RACOON_REPORT = graphql(`#graphql
         id
         name @include(if: $includeName)
         totalAmount @include(if: $includeTotalAmount)
-        exceptions @include(if: $includeExceptions)
+        exceptions @include(if: $includeExceptions) {
+          entryId
+          text
+        }
         entries @include(if: $includeEntries) {
           id
           amount
@@ -77,12 +80,17 @@ export const GET_RACOON_ENTRY = graphql(`#graphql
     $id: String!,
     $includeAmount: Boolean!,
     $includeReceipt: Boolean!,
+    $includeExceptions: Boolean!
   ) {
     racoon {
       entry(id: $id) {
         id
         amount @include(if: $includeAmount)
         receipt @include(if: $includeReceipt)
+        exceptions @include(if: $includeExceptions) {
+          entryId
+          text
+        }
       }
     }
   }

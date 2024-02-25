@@ -67,6 +67,7 @@ export const EntryDataProvider: FC<{
   const isStaleRef = useRef<Record<EntryDataFragment, DataStatus>>({
     amount: DataStatus.LATEST,
     receipt: DataStatus.LATEST,
+    exceptions: DataStatus.LATEST
   });
 
   // Main query that fetches the entry data and its fragments.
@@ -79,6 +80,7 @@ export const EntryDataProvider: FC<{
       id: entryId,
       includeAmount: isStaleRef.current.amount === DataStatus.REQUESTED,
       includeReceipt: isStaleRef.current.receipt === DataStatus.REQUESTED,
+      includeExceptions: isStaleRef.current.exceptions === DataStatus.REQUESTED,
     }),
     // Save each data fragment to the cache under the appropriate key.
     onSuccess: (data) => {
@@ -148,11 +150,9 @@ export const EntryDataProvider: FC<{
   });
 
   useOnInvalidate(keys.entry.getEntryAmount(reportId, entryId), () => {
-    console.log('entry amount changed');
     isStaleRef.current.amount = DataStatus.STALE;
   });
   useOnInvalidate(keys.entry.getEntryReceipt(reportId, entryId), () => {
-    console.log('entry receipt changed');
     isStaleRef.current.receipt = DataStatus.STALE;
   });
 

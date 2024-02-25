@@ -13,7 +13,11 @@ const resolvers = {
   },
   Racoon: {
     report: () => racoon,
-    entry: (_root: void, {id}) => getEntry(id)
+    entry: (_root: void, {id}) => {
+      const entry = getEntry(id);
+      const exceptions = racoon.exceptions.filter(e => e.entryId === id);
+      return {...entry, exceptions};
+    }
   },
   RacoonMutation: {
     updateEntryAmount: (_root: void, {id}) => {
@@ -28,10 +32,11 @@ const resolvers = {
 
       if (entry.receipt) {
         entry.receipt = null;
-        racoon.exceptions.push('Missing receipt!');
+        racoon.exceptions.push({entryId: id, text: 'Missing receipt!'});
       } else {
         entry.receipt = 'https://example.com/receipt.jpg';
-        racoon.exceptions.pop();
+        const exception = racoon.exceptions.findIndex(e => e.entryId === id);
+        racoon.exceptions.splice(exception, 1);
       }
       return ok;
     },
