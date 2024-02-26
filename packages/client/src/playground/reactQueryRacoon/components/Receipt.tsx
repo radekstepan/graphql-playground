@@ -1,10 +1,10 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useEntryData, useReadEntryReceiptData } from '../hooks/useEntryData';
+import { useReportEntryData, useReadEntryReceiptData } from '../hooks/useReportEntryData';
 
 const Receipt = () => {
   const componentRef = useFlashOnRender();
-  const {entryId, updateEntryReceipt} = useEntryData();
+  const {entryId, updateEntryReceipt} = useReportEntryData();
   const receipt = useReadEntryReceiptData();
 
   return (

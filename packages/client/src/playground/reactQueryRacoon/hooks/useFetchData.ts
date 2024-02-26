@@ -1,71 +1,53 @@
-import { useEffect, useRef, type MutableRefObject, useCallback } from "react";
-import debounce from "debounce";
+import { useEffect, useRef, useCallback, useContext, type MutableRefObject } from "react";
+import { OverseerContext } from "../providers/OverseerProvider";
 import { useAtom } from "./useAtom";
 import { loadingAtom } from "../atoms/loadingAtom";
+import { type QueryKey } from "../keys";
 import { DataStatus } from "../interfaces";
 
-export const useFetchData = <QK>({
+export const useFetchData = <QK extends QueryKey>({
   isStaleRef,
+  providerKey,
   refetch,
-  getFragmentFromKey
+  getFragmentFromKey,
 }: {
   isStaleRef: MutableRefObject<Record<string, DataStatus>>;
+  providerKey: string;
   refetch: () => Promise<any>;
   getFragmentFromKey: (key: QK) => string|null;
 }) => {
-  const isMounted = useRef(true);
+  const overseer = useContext(OverseerContext);
 
-  // Track if there's a request in flight and if there's a queued request.
-  const isReqInFlightRef = useRef(false);
-  const isReqQueued = useRef(false);
+  const isMounted = useRef(true);
 
   const [, setIsLoading] = useAtom(loadingAtom);
 
-  // Fire off a network request if any data is stale and requested by a component.
-  const fetchData = debounce(async () => {
-    // If there's no data to fetch, bail out.
+  // Register the fetch with the overseer.
+  const fetchData = useCallback((queryKey: QK) => {
     if (!Object.values(isStaleRef.current).find(status => status === DataStatus.REQUESTED)) {
       return;
     }
-    // If there's a request in flight, queue another one.
-    if (isReqInFlightRef.current) {
-      isReqQueued.current = true;
-      return;
-    }
-    isReqInFlightRef.current = true;
     setIsLoading(true);
-    refetch().finally(() => {
-      isReqInFlightRef.current = false;
-      setIsLoading(false);
-      // Trigger any queued requests.
-      if (isReqQueued.current && isMounted.current) {
-        isReqQueued.current = false;
-        fetchData();
-      }
+    overseer.registerFetch(queryKey, providerKey, async () => {
+      await refetch().finally(() => {
+        if (!isMounted.current) {
+          return;
+        }
+        setIsLoading(false);
+      });
     });
-  }, 200);
+  }, [overseer, refetch, setIsLoading]);
 
   useEffect(() => () => {
     isMounted.current = false;
-    fetchData.clear();
   }, []);
 
-  const checkAndFetch = useCallback((fragment: string) => {
-    if (isStaleRef.current[fragment] === DataStatus.STALE) {
-      isStaleRef.current[fragment] = DataStatus.REQUESTED;
-      fetchData();
-    }
-  }, [fetchData]);
-
-  // Mark stale data as requested by a component.
+  // Simplified callback that marks data as requested and triggers fetch.
   return useCallback((queryKey: QK) => {
     const fragment = getFragmentFromKey(queryKey);
-    if (fragment) {
-      checkAndFetch(fragment);
-      return;
+    if (fragment && isStaleRef.current[fragment] === DataStatus.STALE) {
+      isStaleRef.current[fragment] = DataStatus.REQUESTED;
+      fetchData(queryKey);
     }
-    for (const fragment in isStaleRef.current) {
-      checkAndFetch(fragment);
-    }
-  }, []);
-}
+  }, [fetchData, getFragmentFromKey]);
+};

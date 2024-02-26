@@ -3,7 +3,7 @@ import Entry from './Entry';
 import Receipt from './Receipt';
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
 import { useReadReportEntriesData } from '../hooks/useReportData';
-import { EntryDataProvider } from '../providers/EntryDataProvider';
+import { ReportEntryDataProvider } from '../providers/ReportEntryDataProvider';
 
 const Entries = ({reportId}: {reportId: string}) => {
   const componentRef = useFlashOnRender();
@@ -13,10 +13,10 @@ const Entries = ({reportId}: {reportId: string}) => {
     <div ref={componentRef}>{
       entries?.map((entry) => (
         <div key={entry.id} className="flex">
-          <EntryDataProvider reportId={reportId} entryId={entry.id}>
+          <ReportEntryDataProvider reportId={reportId} entryId={entry.id}>
             <Entry />
             <Receipt />
-          </EntryDataProvider>
+          </ReportEntryDataProvider>
         </div>
       ))
     }</div>

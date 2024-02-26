@@ -16,7 +16,7 @@ function useGenericReadReportData<T>(keyFunction: ReportKeyFunction): T | undefi
     key,
     () => {
       // Signal that data is requested.
-      requestData(key);
+      requestData(key as any); // TODO
       // Get the data from the cache.
       return client.getQueryData<T>(key) ?? null;
     }

@@ -1,12 +1,13 @@
-import React, {createContext, useMemo, useRef, type FC, type ReactNode} from 'react';
+import React, {createContext, useMemo, useRef, type FC, type ReactNode, useCallback, useContext} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {gqlClient} from '../client';
+import { ReportDataContext } from './ReportDataProvider';
 import { useAtom } from '../hooks/useAtom';
 import { useFetchData } from '../hooks/useFetchData';
 import { useOnInvalidate } from '../hooks/useOnInvalidate';
 import { useInvalidateQuery } from '../hooks/useInvalidateQuery';
 import { loadingAtom } from '../atoms/loadingAtom';
-import {keys, type EntryQueryKey, type EntryDataFragment, type ReportDataType} from '../keys';
+import {keys, type ReportEntryQueryKey, type ReportEntryDataFragment, type ReportDataType} from '../keys';
 import { DataStatus } from '../interfaces';
 import {
   GET_RACOON_ENTRY,
@@ -17,12 +18,13 @@ import {
   type UpdateRacoonEntryAmountMutationVariables,
   type UpdateRacoonEntryReceiptMutationVariables
 } from '../../../__generated/graphql';
+import { REPORT_KEY } from '../constants';
 
-interface EntryData {
+export interface ReportEntryDataValue {
   reportId: string
   entryId: string
   // Request the data fragment from the server if it's stale.
-  requestData: (key: EntryQueryKey) => void
+  requestData: (key:  ReportEntryQueryKey) => void
   // Update the entry amount and mark the total amount and entry as stale.
   updateEntryAmount: (
     variables: UpdateRacoonEntryAmountMutationVariables
@@ -34,7 +36,7 @@ interface EntryData {
 }
 
 const noop = () => {
-  throw new Error('Must be used within an EntryDataProvider');
+  throw new Error('Must be used within an ReportEntryDataProvider');
 };
 
 const defaultValue = {
@@ -45,17 +47,16 @@ const defaultValue = {
   updateEntryReceipt: noop
 };
 
-// Pluck the data fragment from the query key.
-const getFragmentFromKey = (queryKey: EntryQueryKey): EntryDataFragment|null => queryKey[4] ?? null;
-
-export const EntryDataContext = createContext<EntryData>(defaultValue);
+export const ReportEntryDataContext = createContext<ReportEntryDataValue>(defaultValue);
 
 // The provider that fetches the entry data (and its fragments) and provides the data to the components.
-export const EntryDataProvider: FC<{
+export const ReportEntryDataProvider: FC<{
   reportId: string,
   entryId: string,
   children: ReactNode
 }> = ({ reportId, entryId, children }) => {
+  const reportContext = useContext(ReportDataContext);
+
   const client = useQueryClient();
   const invalidate = useInvalidateQuery();
 
@@ -64,7 +65,7 @@ export const EntryDataProvider: FC<{
   // Mark all fragments as stale and request we fetch them.
   // TODO have an "indeterminate" state to only fetch the data if it is not in the cache
   //  already so that we can work independently or as child of ReportDataProvider.
-  const isStaleRef = useRef<Record<EntryDataFragment, DataStatus>>({
+  const isStaleRef = useRef<Record<ReportEntryDataFragment, DataStatus>>({
     amount: DataStatus.LATEST,
     receipt: DataStatus.LATEST,
     exceptions: DataStatus.LATEST
@@ -87,7 +88,6 @@ export const EntryDataProvider: FC<{
       if (data.racoon.entry.amount !== undefined) {
         // TODO
         client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
-          // TODO save by "byId"
           for (const entry of entries!) {
             if (entry.id === entryId) {
               entry.amount = data.racoon.entry.amount!;
@@ -95,13 +95,16 @@ export const EntryDataProvider: FC<{
             }
           }
         });
+        client.setQueryData(keys.reportEntry.getEntryAmount(reportId, entryId), data.racoon.entry.amount);
+
+        client.invalidateQueries(keys.reportEntry.getEntryAmount(reportId, entryId));
         client.invalidateQueries(keys.report.getReportEntries(reportId));
+
         isStaleRef.current.amount = DataStatus.LATEST;
       }
       if (data.racoon.entry.receipt !== undefined) {
         // TODO
         client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
-          // TODO save by "byId"
           for (const entry of entries!) {
             if (entry.id === entryId) {
               entry.receipt = data.racoon.entry.receipt;
@@ -109,7 +112,18 @@ export const EntryDataProvider: FC<{
             }
           }
         });
+        client.setQueryData(keys.reportEntry.getEntryReceipt(reportId, entryId), data.racoon.entry.receipt);
+
+        client.invalidateQueries(keys.reportEntry.getEntryReceipt(reportId, entryId));
         client.invalidateQueries(keys.report.getReportEntries(reportId));
+
+        isStaleRef.current.receipt = DataStatus.LATEST;
+      }
+      if (data.racoon.entry.exceptions !== undefined) {
+        // TODO what about the report exceptions??
+        client.setQueryData(keys.report.getEntryExceptions(reportId, entryId), data.racoon.entry.exceptions);
+        client.invalidateQueries(keys.report.getEntryExceptions(reportId, entryId));
+
         isStaleRef.current.receipt = DataStatus.LATEST;
       }
     }
@@ -124,7 +138,7 @@ export const EntryDataProvider: FC<{
     onSuccess: () => {
       isStaleRef.current.amount = DataStatus.STALE;
       // Invalidate the report total amount and entry queries so that components can ask for fresh data.
-      invalidate(keys.entry.getEntryAmount(reportId, entryId));
+      invalidate(keys.reportEntry.getEntryAmount(reportId, entryId));
       invalidate(keys.report.getReportTotalAmount(reportId));
     }
   });
@@ -138,22 +152,36 @@ export const EntryDataProvider: FC<{
     onSuccess: () => {
       isStaleRef.current.receipt = DataStatus.STALE;
       // Invalidate the exceptions and entry queries so that components can ask for fresh data.
-      invalidate(keys.entry.getEntryReceipt(reportId, entryId));
-      invalidate(keys.report.getReportExceptions(reportId));
+      invalidate(keys.reportEntry.getEntryReceipt(reportId, entryId));
+      invalidate(keys.report.getReportExceptions(reportId), true);
+      invalidate(keys.report.getEntryExceptions(reportId, entryId));
     }
   });
 
   const requestData = useFetchData({
     isStaleRef,
     refetch: refetchEntry,
-    getFragmentFromKey
+    providerKey: 'reportEntryDataProvider',
+    // TODO
+    getFragmentFromKey: (queryKey: any): ReportEntryDataFragment|null => {
+      switch (JSON.stringify(queryKey)) {
+        case JSON.stringify(keys.report.getEntryExceptions(reportId, entryId)):
+          return 'exceptions';
+        default:
+          return queryKey[4] ?? null
+      }
+    },
   });
 
-  useOnInvalidate(keys.entry.getEntryAmount(reportId, entryId), () => {
+  // Mark our fragments as stale when a key gets invalidated.
+  useOnInvalidate(keys.reportEntry.getEntryAmount(reportId, entryId), () => {
     isStaleRef.current.amount = DataStatus.STALE;
   });
-  useOnInvalidate(keys.entry.getEntryReceipt(reportId, entryId), () => {
+  useOnInvalidate(keys.reportEntry.getEntryReceipt(reportId, entryId), () => {
     isStaleRef.current.receipt = DataStatus.STALE;
+  });
+  useOnInvalidate(keys.report.getEntryExceptions(reportId, entryId), () => {
+    isStaleRef.current.exceptions = DataStatus.STALE;
   });
 
   const value = useMemo(() => ({
@@ -165,8 +193,8 @@ export const EntryDataProvider: FC<{
   }), []);
 
   return (
-    <EntryDataContext.Provider value={value}>
+    <ReportEntryDataContext.Provider value={value}>
       {children}
-    </EntryDataContext.Provider>
+    </ReportEntryDataContext.Provider>
   );
 };

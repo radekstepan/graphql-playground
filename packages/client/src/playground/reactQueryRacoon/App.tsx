@@ -7,27 +7,30 @@ import ReportExceptions from './components/ReportExceptions';
 import Entries from './components/Entries';
 import Loading from './components/Loading';
 import {AtomStateProvider} from './providers/AtomStateProvider';
+import { OverseerProvider } from './providers/OverseerProvider';
 import {ReportDataProvider} from './providers/ReportDataProvider';
 import './styles.less'
 
 function App() {
   return (
     <div id="racoon">
-      <ReportDataProvider reportId="REP_1">
-        <div className="flex section">
-          <ReportName />
-          <ReportTotals />
-        </div>
-        <div>
-          <ReportExceptions />
-        </div>
-        <div className="section">
-          <Entries reportId="REP_1" />
-        </div>
-        <div className="section">
-          <Loading />
-        </div>
-      </ReportDataProvider>
+      <OverseerProvider>
+        <ReportDataProvider reportId="REP_1">
+          <div className="flex section">
+            <ReportName />
+            <ReportTotals />
+          </div>
+          <div>
+            <ReportExceptions />
+          </div>
+          <div className="section">
+            <Entries reportId="REP_1" />
+          </div>
+          <div className="section">
+            <Loading />
+          </div>
+        </ReportDataProvider>
+      </OverseerProvider>
     </div>
   );
 };

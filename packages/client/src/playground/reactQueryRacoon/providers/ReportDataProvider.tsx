@@ -3,13 +3,14 @@ import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {gqlClient} from '../client';
 import { useFetchData } from '../hooks/useFetchData';
 import { useOnInvalidate } from '../hooks/useOnInvalidate';
-import {keys, type ReportDataFragment, type ReportQueryKey} from '../keys';
+import {keys, type ReportDataType, type ReportDataFragment, type ReportQueryKey} from '../keys';
 import { DataStatus } from '../interfaces';
 import {GET_RACOON_REPORT} from '../../../queries';
+import { listById } from '../utils';
 
-interface ReportData {
+export interface ReportDataValue {
   reportId: string
-  // Request the data fragment from the server if it's stale.
+// Request the data fragment from the server if it's stale.
   requestData: (key: ReportQueryKey) => void
 }
 
@@ -27,16 +28,9 @@ const getFragmentFromKey = (queryKey: ReportQueryKey): ReportDataFragment => que
 // Turn a data fragment into a query key.
 // const getKeyFromFragment = (reportId: string, fragment: DataFragment): QueryKey => KEYS[`getReport${fragment[0].toUpperCase()}${fragment.slice(1)}`](reportId);
 
-export const ReportDataContext = createContext<ReportData>(defaultValue);
+export const ReportDataContext = createContext<ReportDataValue>(defaultValue);
 
-/**
- * The provider that fetches the report data (and its fragments) and provides the data to the components.
- * TODO:
- * - Is it OK that data is fetched potentially for a component that is unmounted? Apollo would just ignore the result.
- * - Should we concatenate the GQL instead of passing booleans to the query? This would impact how we write tests.
- * - Check if graphql-request uses an AbortController under the hood for when we navigate away from the page.
- * - Have a pattern for invoking a request for data immediately (fetchData.flush).
- */
+// The provider that fetches the report data (and its fragments) and provides the data to the components.
 export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = ({ reportId, children }) => {
   const client = useQueryClient();
 
@@ -55,6 +49,7 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
     queryFn: () => gqlClient.request(GET_RACOON_REPORT, {
       includeName: isStaleRef.current.name === DataStatus.REQUESTED,
       includeTotalAmount: isStaleRef.current.totalAmount === DataStatus.REQUESTED,
+      // TODO how can these deduplicate the entries ones?
       includeExceptions: isStaleRef.current.exceptions === DataStatus.REQUESTED,
       includeEntries: isStaleRef.current.entries === DataStatus.REQUESTED
     }),
@@ -70,12 +65,30 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
         isStaleRef.current.totalAmount = DataStatus.LATEST;
       }
       if (data.racoon.report.exceptions !== undefined) {
+        // Save the list.
         client.setQueryData(keys.report.getReportExceptions(reportId), data.racoon.report.exceptions);
+        // Save the list by entryId.
+        const byEntryId = listById(data.racoon.report.exceptions, 'entryId');
+        // TODO Jesus Murphy! Need to first reset the cache for each entry.
+        const entries = client.getQueryData<ReportDataType['entries']>(keys.report.getReportEntries(reportId)) ?? [];
+        for (const entry of entries) {
+          client.setQueryData(keys.report.getEntryExceptions(reportId, entry.id), []);
+        }
+        for (const [entryId, exceptions] of Object.entries(byEntryId)) {
+          client.setQueryData(keys.report.getEntryExceptions(reportId, entryId), exceptions);
+        }
         isStaleRef.current.exceptions = DataStatus.LATEST;
       }
-      // TODO "byId", "order"
       if (data.racoon.report.entries !== undefined) {
+        // Save the list.
         client.setQueryData(keys.report.getReportEntries(reportId), data.racoon.report.entries);
+        // Save the list by entryId.
+        for (const entry of data.racoon.report.entries) {
+          client.setQueryData(keys.reportEntry.getEntry(reportId, entry.id), entry);
+          // TODO the fields between the report and entry won't be the same.
+          client.setQueryData(keys.reportEntry.getEntryAmount(reportId, entry.id), entry.amount);
+          client.setQueryData(keys.reportEntry.getEntryReceipt(reportId, entry.id), entry.receipt);
+        }
         isStaleRef.current.entries = DataStatus.LATEST;
       }
     }
@@ -83,8 +96,9 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
 
   const requestData = useFetchData({
     isStaleRef,
+    providerKey: 'reportDataProvider',
     refetch: refetchReport,
-    getFragmentFromKey
+    getFragmentFromKey,
   });
 
   useOnInvalidate(keys.report.getReportExceptions(reportId), () => {
