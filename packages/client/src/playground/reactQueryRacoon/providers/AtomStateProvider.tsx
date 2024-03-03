@@ -2,22 +2,26 @@ import React, {createContext, useRef, useMemo, type ReactNode, type FC} from 're
 
 type AtomKey = string;
 
+type SetterFn<T> = (prevValue: T, nextValue: T) => T;
+
 export interface Atom<T> {
   key: AtomKey;
   value: T;
+  setter?: SetterFn<T>;
 }
 
 interface AtomStateContextType {
-  subscribe: <T>(atom: Atom<T>, callback: (value: T) => void) => () => void;
+  subscribe: <T>(atom: Atom<T>, callback: (value: T) => void) => UnsubscribeFn;
   getAtomValue: <T>(atom: Atom<T>) => T;
   setAtomValue: <T>(atom: Atom<T>, newValue: T) => void;
 }
 
 type CallbackFn<T> = (value: T) => void;
+type UnsubscribeFn = () => void;
 
 // Init an atom under a given key.
 // TODO add a hash to the key to avoid collisions.
-export const atom = <T,>(key: AtomKey, value: T): Atom<T> => ({ key, value });
+export const atom = <T,>(key: AtomKey, value: T, options?: {setter: SetterFn<T>}): Atom<T> => ({ key, value, setter: options?.setter });
 
 export const AtomStateContext = createContext<AtomStateContextType | null>(null);
 
@@ -26,16 +30,18 @@ export const AtomStateProvider: FC<{ children: ReactNode }> = ({ children }) => 
   const values = useRef<Map<AtomKey, any>>(new Map());
   const subscribers = useRef<Map<AtomKey, Set<CallbackFn<any>>>>(new Map());
 
-  const getAtomValue = <T,>(atom: Atom<T>): T => values.current.get(atom.key);
+  const getAtomValue = <T,>(atom: Atom<T>): T => values.current.has(atom.key) ? values.current.get(atom.key).value : atom.value;
 
   const setAtomValue = <T,>(atom: Atom<T>, newValue: T): void => {
-    values.current.set(atom.key, newValue);
+    const currentAtom = values.current.get(atom.key);
+    const updatedValue = currentAtom?.setter ? currentAtom.setter(currentAtom.value, newValue) : newValue;
+    values.current.set(atom.key, { ...currentAtom, value: updatedValue });
     for (const callback of subscribers.current.get(atom.key) ?? []) {
-      callback(newValue);
+      callback(updatedValue);
     }
   };
 
-  const subscribe = <T,>(atom: Atom<T>, callback: CallbackFn<T>): () => void => {
+  const subscribe = <T,>(atom: Atom<T>, callback: CallbackFn<T>): UnsubscribeFn => {
     const {key} = atom;
     let callbacks = subscribers.current.get(key);
     if (!callbacks) {

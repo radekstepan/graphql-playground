@@ -1,17 +1,16 @@
-import React, {createContext, useMemo, useRef, type FC, type ReactNode} from 'react';
+import React, {createContext, useMemo, type FC, type ReactNode, useEffect, useRef} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {gqlClient} from '../client';
-import { useFetchData } from '../hooks/useFetchData';
-import { useOnInvalidate } from '../hooks/useOnInvalidate';
-import {keys, type ReportDataType, type ReportDataFragment, type ReportQueryKey} from '../keys';
+import {keys, type ReportDataType} from '../keys';
 import { DataStatus } from '../interfaces';
 import {GET_RACOON_REPORT} from '../../../queries';
-import { listById } from '../utils';
+import { useAtomLazy } from '../hooks/useAtomLazy';
+import { queriesAtom } from '../atoms/queriesAtom';
+import { triggerRequestEvent } from '../events/triggerRequestEvent';
+import { useOverseer } from '../hooks/useOverseer';
 
 export interface ReportDataValue {
   reportId: string
-// Request the data fragment from the server if it's stale.
-  requestData: (key: ReportQueryKey) => void
 }
 
 const noop = () => {
@@ -20,13 +19,7 @@ const noop = () => {
 
 const defaultValue = {
   reportId: '',
-  requestData: noop
 };
-
-// Pluck the data fragment from the query key.
-const getFragmentFromKey = (queryKey: ReportQueryKey): ReportDataFragment => queryKey[2];
-// Turn a data fragment into a query key.
-// const getKeyFromFragment = (reportId: string, fragment: DataFragment): QueryKey => KEYS[`getReport${fragment[0].toUpperCase()}${fragment.slice(1)}`](reportId);
 
 export const ReportDataContext = createContext<ReportDataValue>(defaultValue);
 
@@ -34,83 +27,104 @@ export const ReportDataContext = createContext<ReportDataValue>(defaultValue);
 export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = ({ reportId, children }) => {
   const client = useQueryClient();
 
-  // Mark all fragments as stale and request we fetch them.
-  const isStaleRef = useRef<Record<ReportDataFragment, DataStatus>>({
-    name: DataStatus.REQUESTED,
-    totalAmount: DataStatus.REQUESTED,
-    exceptions: DataStatus.REQUESTED,
-    entries: DataStatus.REQUESTED
-  });
+  const {events} = useOverseer();
+
+  const [, setQueries] = useAtomLazy(queriesAtom);
+
+  const includeFragmentsRef = useRef(new Set<
+    | 'includeName'
+    | 'includeTotalAmount'
+    | 'includeExceptions'
+    | 'includeEntries'>([
+      'includeName',
+      'includeTotalAmount',
+      'includeExceptions',
+      'includeEntries'
+    ])
+  );
 
   // Main query that fetches the report data and its fragments.
-  const {refetch: refetchReport} = useQuery({
-    queryKey: [`$GetReport:${reportId}`], // <-- ignore this key
+  const {refetch} = useQuery({
+    queryKey: [`$GetReport:${reportId}`],
     // Fetch the report's requested fragments.
     queryFn: () => gqlClient.request(GET_RACOON_REPORT, {
-      includeName: isStaleRef.current.name === DataStatus.REQUESTED,
-      includeTotalAmount: isStaleRef.current.totalAmount === DataStatus.REQUESTED,
-      // TODO how can these deduplicate the entries ones?
-      includeExceptions: isStaleRef.current.exceptions === DataStatus.REQUESTED,
-      includeEntries: isStaleRef.current.entries === DataStatus.REQUESTED
+      includeName: includeFragmentsRef.current.has('includeName'),
+      includeTotalAmount: includeFragmentsRef.current.has('includeTotalAmount'),
+      includeExceptions: includeFragmentsRef.current.has('includeExceptions'),
+      includeEntries: includeFragmentsRef.current.has('includeEntries'),
     }),
     // Save each data fragment to the cache under the appropriate key.
     onSuccess: (data) => {
       // You could walk the fragments here, but leaving as is for simplicity.
       if (data.racoon.report.name !== undefined) {
+        includeFragmentsRef.current.delete('includeName');
+        setQueries((queries) => queries.set(keys.report.getReportName(reportId), DataStatus.LATEST));
         client.setQueryData(keys.report.getReportName(reportId), data.racoon.report.name);
-        isStaleRef.current.name = DataStatus.LATEST;
       }
       if (data.racoon.report.totalAmount !== undefined) {
+        includeFragmentsRef.current.delete('includeTotalAmount');
+        setQueries((queries) => queries.set(keys.report.getReportTotalAmount(reportId), DataStatus.LATEST));
         client.setQueryData(keys.report.getReportTotalAmount(reportId), data.racoon.report.totalAmount);
-        isStaleRef.current.totalAmount = DataStatus.LATEST;
       }
       if (data.racoon.report.exceptions !== undefined) {
-        // Save the list.
-        client.setQueryData(keys.report.getReportExceptions(reportId), data.racoon.report.exceptions);
-        // Save the list by entryId.
-        const byEntryId = listById(data.racoon.report.exceptions, 'entryId');
-        // TODO Jesus Murphy! Need to first reset the cache for each entry.
+        includeFragmentsRef.current.delete('includeExceptions');
+        // Save the exceptions for each entry.
         const entries = client.getQueryData<ReportDataType['entries']>(keys.report.getReportEntries(reportId)) ?? [];
         for (const entry of entries) {
+          setQueries((queries) => queries.set(keys.report.getEntryExceptions(reportId, entry.id), DataStatus.LATEST));
           client.setQueryData(keys.report.getEntryExceptions(reportId, entry.id), []);
         }
-        for (const [entryId, exceptions] of Object.entries(byEntryId)) {
-          client.setQueryData(keys.report.getEntryExceptions(reportId, entryId), exceptions);
-        }
-        isStaleRef.current.exceptions = DataStatus.LATEST;
+        // Save the list.
+        setQueries((queries) => queries.set(keys.report.getReportExceptions(reportId), DataStatus.LATEST));
+        client.setQueryData(keys.report.getReportExceptions(reportId), data.racoon.report.exceptions);
       }
       if (data.racoon.report.entries !== undefined) {
-        // Save the list.
-        client.setQueryData(keys.report.getReportEntries(reportId), data.racoon.report.entries);
-        // Save the list by entryId.
+        includeFragmentsRef.current.delete('includeEntries');
+        // Save the data for each entry.
         for (const entry of data.racoon.report.entries) {
-          client.setQueryData(keys.reportEntry.getEntry(reportId, entry.id), entry);
-          // TODO the fields between the report and entry won't be the same.
-          client.setQueryData(keys.reportEntry.getEntryAmount(reportId, entry.id), entry.amount);
-          client.setQueryData(keys.reportEntry.getEntryReceipt(reportId, entry.id), entry.receipt);
+          setQueries((queries) => queries.set(keys.reportEntry.getReportEntry(reportId, entry.id), DataStatus.LATEST));
+          setQueries((queries) => queries.set(keys.reportEntry.getReportEntryAmount(reportId, entry.id), DataStatus.LATEST));
+          setQueries((queries) => queries.set(keys.reportEntry.getReportEntryReceipt(reportId, entry.id), DataStatus.LATEST));
+
+          client.setQueryData(keys.reportEntry.getReportEntry(reportId, entry.id), entry);
+          client.setQueryData(keys.reportEntry.getReportEntryAmount(reportId, entry.id), entry.amount);
+          client.setQueryData(keys.reportEntry.getReportEntryReceipt(reportId, entry.id), entry.receipt);
         }
-        isStaleRef.current.entries = DataStatus.LATEST;
+        // Save the list.
+        setQueries((queries) => queries.set(keys.report.getReportEntries(reportId), DataStatus.LATEST));
+        client.setQueryData(keys.report.getReportEntries(reportId), data.racoon.report.entries);
       }
     }
   });
 
-  const requestData = useFetchData({
-    isStaleRef,
-    providerKey: 'reportDataProvider',
-    refetch: refetchReport,
-    getFragmentFromKey,
-  });
+  useEffect(() => events.on(triggerRequestEvent, (queryKeys) => {
+    for (const queryKey of queryKeys) {
+      switch (queryKey) {
+        case keys.report.getReportName(reportId):
+          includeFragmentsRef.current.add('includeName');
+          break;
+        case keys.report.getReportTotalAmount(reportId):
+          includeFragmentsRef.current.add('includeTotalAmount');
+          break;
+        case keys.report.getReportExceptions(reportId):
+          includeFragmentsRef.current.add('includeExceptions');
+          break;
+        case keys.report.getReportEntries(reportId):
+          includeFragmentsRef.current.add('includeEntries');
+          break;
+        default:
+          break;
+      }
+    }
 
-  useOnInvalidate(keys.report.getReportExceptions(reportId), () => {
-    isStaleRef.current.exceptions = DataStatus.STALE;
-  });
-  useOnInvalidate(keys.report.getReportTotalAmount(reportId), () => {
-    isStaleRef.current.totalAmount = DataStatus.STALE;
-  });
+    // NOTE: refetch doesn't accept arguments, so we need to use a ref.
+    if (includeFragmentsRef.current.size) {
+      refetch();
+    }
+  }), []);
 
   const value = useMemo(() => ({
     reportId,
-    requestData
   }), []);
 
   return (

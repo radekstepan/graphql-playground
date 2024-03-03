@@ -5,7 +5,7 @@ import { loadingAtom } from "../atoms/loadingAtom";
 import { type QueryKey } from "../keys";
 import { DataStatus } from "../interfaces";
 
-export const useFetchData = <QK extends QueryKey>({
+export const useRequestData = <QK extends QueryKey>({
   isStaleRef,
   providerKey,
   refetch,
@@ -13,23 +13,30 @@ export const useFetchData = <QK extends QueryKey>({
 }: {
   isStaleRef: MutableRefObject<Record<string, DataStatus>>;
   providerKey: string;
-  refetch: () => Promise<any>;
+  refetch: (queryKeys: QK[]) => Promise<any>;
   getFragmentFromKey: (key: QK) => string|null;
 }) => {
   const overseer = useContext(OverseerContext);
-
   const isMounted = useRef(true);
-
   const [, setIsLoading] = useAtom(loadingAtom);
 
-  // Register the fetch with the overseer.
-  const fetchData = useCallback((queryKey: QK) => {
-    if (!Object.values(isStaleRef.current).find(status => status === DataStatus.REQUESTED)) {
+  useEffect(() => () => {
+    isMounted.current = false;
+  }, []);
+
+  // Fetch data.
+  return useCallback((queryKey: QK) => {
+    // Get the fragment and check that it's been marked as stale.
+    const fragment = getFragmentFromKey(queryKey);
+    if (!fragment || isStaleRef.current[fragment] !== DataStatus.STALE) {
       return;
     }
-    setIsLoading(true);
-    overseer.registerFetch(queryKey, providerKey, async () => {
-      await refetch().finally(() => {
+    overseer.registerFetch(queryKey, providerKey, async (queryKeys: any[] | null) => { // TODO
+      if (!queryKeys) {
+        return;
+      }
+      setIsLoading(true);
+      await refetch(queryKeys).finally(() => {
         if (!isMounted.current) {
           return;
         }
@@ -37,17 +44,4 @@ export const useFetchData = <QK extends QueryKey>({
       });
     });
   }, [overseer, refetch, setIsLoading]);
-
-  useEffect(() => () => {
-    isMounted.current = false;
-  }, []);
-
-  // Simplified callback that marks data as requested and triggers fetch.
-  return useCallback((queryKey: QK) => {
-    const fragment = getFragmentFromKey(queryKey);
-    if (fragment && isStaleRef.current[fragment] === DataStatus.STALE) {
-      isStaleRef.current[fragment] = DataStatus.REQUESTED;
-      fetchData(queryKey);
-    }
-  }, [fetchData, getFragmentFromKey]);
 };

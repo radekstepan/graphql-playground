@@ -1,79 +1,66 @@
-import React, { createContext, useCallback, useRef, useMemo, type FC, type ReactNode } from "react";
+import React, { type FC, type ReactNode, useEffect, useContext, useRef, createContext } from "react";
 import debounce from "debounce";
 import { type QueryKey } from "../keys";
+import {queriesAtom } from "../atoms/queriesAtom";
+import { AtomStateContext } from "./AtomStateProvider";
+import { useAtomLazy } from "../hooks/useAtomLazy";
+import { DataStatus } from "../interfaces";
+import { removeChildArrays } from "../utils";
+import { type RequestDataEvent, requestDataEvent } from "../events/requestDataEvent";
+import { type TriggerRequestEvent, triggerRequestEvent } from "../events/triggerRequestEvent";
+import { EventEmitter } from "../classes/EventEmitter";
+import { useOverseer } from "../hooks/useOverseer";
+
+interface Events {
+  [requestDataEvent]: RequestDataEvent;
+  [triggerRequestEvent]: TriggerRequestEvent;
+}
 
 export interface OverseerValue {
-  registerFetch: (key: QueryKey, providerKey: string, fetchFunction: () => Promise<any>) => void;
+  events: EventEmitter<Events>;
 }
 
 const defaultValue: OverseerValue = {
-  registerFetch: () => {
-    throw new Error('Must be used within an OverseerProvider');
-  },
+  events: new EventEmitter<Events>(),
 };
 
 export const OverseerContext = createContext<OverseerValue>(defaultValue);
 
-const removeDuplicatesAndChildKeys = (keys: QueryKey[]) => {
-  const uniqueKeys = new Set(keys.map(key => {
-    const string = JSON.stringify(key);
-    return string.substring(1, string.length - 1);
-  }));
-
-  for (const key of uniqueKeys) {
-    for (const otherKey of uniqueKeys) {
-      if (key !== otherKey && otherKey.startsWith(key)) {
-        uniqueKeys.delete(otherKey);
-      }
-    }
-  }
-
-  return keys.filter(key => {
-    const string = JSON.stringify(key);
-    return uniqueKeys.has(string.substring(1, string.length - 1));
-  });
-};
-
 export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
-  const fetchQueueRef = useRef<Map<QueryKey, [providerKey: string, fetchFunction: () => Promise<any>]>>(new Map());
+  const context = useContext(AtomStateContext);
+  if (!context) {
+    throw new Error('OverseerProvider must be used within an AtomStateProvider');
+  }
+  const requestsRef = useRef(new Set<QueryKey>());
 
-  const triggerFetches = useCallback(() => {
-    // Filter out child keys if their parent is also in the queue
-    const uniqueKeys = removeDuplicatesAndChildKeys(Array.from(fetchQueueRef.current.keys()));
+  const {events} = useOverseer();
 
-    // May have duplicate fetch functions.
-    const functions = new Map<string, () => Promise<any>>();
-    for (const key of uniqueKeys) {
-      const fetchRef = fetchQueueRef.current.get(key);
-      if (fetchRef) {
-        const [providerKey, fetchFunction] = fetchRef;
-        functions.set(providerKey, fetchFunction);
-      }
+  const [getQueries, setQueries] = useAtomLazy(queriesAtom);
+
+  // Debounced requests, dedupe, remove children and trigger the requests.
+  const triggerRequests = debounce(() => {
+    if (!requestsRef.current.size) {
+      return;
     }
-    for (const [, fetchFunction] of functions) {
-      fetchFunction();
+    const res = removeChildArrays(Array.from(requestsRef.current));
+    requestsRef.current.clear();
+    events.emit(triggerRequestEvent, res);
+  }, 200);
+
+  // Check if the fragment is stale and mark it as requested.
+  useEffect(() => events.on(requestDataEvent, (requestedQuery) => {
+    const queries = getQueries();
+    const query = queries.get(requestedQuery);
+    if (query === DataStatus.STALE) {
+      setQueries((map) => map.set(requestedQuery, DataStatus.REQUESTED));
+      requestsRef.current.add(requestedQuery);
     }
-
-    fetchQueueRef.current.clear();
-  }, []);
-
-  const registerFetch = useCallback((
-    key: QueryKey,
-    providerKey: string,
-    fetchFunction: () => Promise<any>
-  ) => {
-    fetchQueueRef.current.set(key, [providerKey, fetchFunction]);
-    // Debounce triggering of fetches
-    debounce(triggerFetches, 200)();
-  }, [triggerFetches]);
-
-  const value = useMemo(() => ({
-    registerFetch,
-  }), [registerFetch]);
+    triggerRequests();
+  }), []);
 
   return (
-    <OverseerContext.Provider value={value}>
+    <>
       {children}
-    </OverseerContext.Provider>
+    </>
   );
 };

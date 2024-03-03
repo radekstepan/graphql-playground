@@ -3,20 +3,24 @@ import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {ReportDataContext} from "../providers/ReportDataProvider";
 import {keys, type ReportKeyFunction} from "../keys";
 import {type RacoonReport} from "../../../__generated/graphql";
+import { useOverseer } from "./useOverseer";
+import { requestDataEvent } from "../events/requestDataEvent";
 
 export const useReportData = () => useContext(ReportDataContext);
 
 function useGenericReadReportData<T>(keyFunction: ReportKeyFunction): T | undefined {
-  const { reportId, requestData } = useContext(ReportDataContext);
+  const { reportId } = useContext(ReportDataContext);
   const client = useQueryClient();
   const key = keyFunction(reportId);
+
+  const {events} = useOverseer();
 
   // TODO loading state and error handling.
   const { data } = useQuery(
     key,
     () => {
-      // Signal that data is requested.
-      requestData(key as any); // TODO
+      // Mark that a component requested the data.
+      events.emit(requestDataEvent, key);
       // Get the data from the cache.
       return client.getQueryData<T>(key) ?? null;
     }
