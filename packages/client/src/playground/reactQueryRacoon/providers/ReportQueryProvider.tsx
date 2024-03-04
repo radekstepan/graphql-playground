@@ -1,18 +1,18 @@
-import React, {createContext, useMemo, useEffect, useRef, type FC, type ReactNode} from 'react';
+import React, {createContext, useMemo, useEffect, useRef, useContext, type FC, type ReactNode} from 'react';
 import {useQuery} from '@tanstack/react-query'
 import {gqlClient} from '../client';
 import { triggerRequestEvent } from '../events/triggerRequestEvent';
 import { loadingAtom } from '../atoms/loadingAtom';
 import { useAtomSetter } from '../hooks/useAtom';
-import { useOverseer } from '../hooks/useOverseer';
 import { useSetQueryData } from '../hooks/useSetQueryData';
 import { useGetQueryData } from '../hooks/useGetQueryData';
 import { listById } from '../utils';
 import {keys} from '../keys';
 import { DataStatus } from '../interfaces';
 import {GET_RACOON_REPORT} from '../../../queries';
+import { OverseerContext } from './OverseerProvider';
 
-export interface ReportDataValue {
+export interface ReportQueryValue {
   reportId: string
 }
 
@@ -20,14 +20,12 @@ const defaultValue = {
   reportId: '',
 };
 
-export const ReportDataContext = createContext<ReportDataValue>(defaultValue);
+export const ReportQueryContext = createContext<ReportQueryValue>(defaultValue);
 
 // The provider that fetches the report data (and its fragments) and provides the data to the components.
-export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = ({ reportId, children }) => {
-  const {events} = useOverseer();
-
+export const ReportQueryProvider: FC<{reportId: string, children: ReactNode}> = ({ reportId, children }) => {
+  const {events} = useContext(OverseerContext);
   const setIsLoading = useAtomSetter(loadingAtom);
-
   const setQueryData = useSetQueryData();
   const getQueryData = useGetQueryData();
 
@@ -131,8 +129,8 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
   }), []);
 
   return (
-    <ReportDataContext.Provider value={value}>
+    <ReportQueryContext.Provider value={value}>
       {children}
-    </ReportDataContext.Provider>
+    </ReportQueryContext.Provider>
   );
 };

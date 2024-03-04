@@ -6,7 +6,7 @@ An example "report" page that has an exceptions and an entry component. The entr
 ## Patterns
 
 1. A single GQL "getter" query that consists of individual fragments (they can be sub-queries)
-2. `ReportDataProvider` for managing all of report data fetching and mutation in a single place
+2. `ReportQueryProvider` for managing all of report data fetching in a single place
   - Only fetching stale date that is needed by a component
   - Complete control over fragment caching and cache invalidation
 3. `OverseerProvider` for debouncing and deduplicating requests

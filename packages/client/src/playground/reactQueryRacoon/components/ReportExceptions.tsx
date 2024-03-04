@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReadReportExceptionsData } from '../hooks/useReportData';
+import { useReportExceptionsQuery } from '../queries/useReportQuery';
 
 const ReportExceptions = () => {
   const componentRef = useFlashOnRender();
-  const exceptions = useReadReportExceptionsData();
+  const exceptions = useReportExceptionsQuery();
 
   return (
     <div ref={componentRef} className="component">

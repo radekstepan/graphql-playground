@@ -1,14 +1,14 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReadReportNameData } from '../hooks/useReportData';
+import { useReportNameQuery } from '../queries/useReportQuery';
 
 const ReportName = () => {
   const componentRef = useFlashOnRender();
-  const name = useReadReportNameData();
+  const name = useReportNameQuery();
 
   return (
     <div ref={componentRef} className="component">
-      {!name.isFetching && <strong>{name.data}</strong>}
+      {!name.isLoading && <strong>{name.data}</strong>}
     </div>
   );
 };

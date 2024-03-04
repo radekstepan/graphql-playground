@@ -19,13 +19,13 @@ const resolvers = {
       return {...entry, exceptions};
     },
   },
-  RacoonCashAdvance: {
-    amount: async () => {
+  RacoonReport: {
+    cashAdvances: async () => {
       // Simulate a slow network request.
       await new Promise(resolve => setTimeout(resolve, 1e3));
-      return racoon.cashAdvances[0]?.amount ?? 0;
-    },
-  },  
+      return racoon.cashAdvances;
+    }
+  },
   RacoonMutation: {
     updateEntryAmount: (_root: void, {entryId}) => {
       const entry = getEntry(entryId);
@@ -33,6 +33,7 @@ const resolvers = {
       entry.amount += 1;
       racoon.totalAmount += 1;
 
+      // "Use up" the cash advances.
       if (racoon.cashAdvances[0]) {
         racoon.cashAdvances[0].amount -= 1;
         if (!racoon.cashAdvances[0].amount) {

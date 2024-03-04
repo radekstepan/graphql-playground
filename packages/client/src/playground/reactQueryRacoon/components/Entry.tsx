@@ -1,20 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { ReportEntryQueryContext } from '../providers/ReportEntryQueryProvider';
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportEntryData, useReadEntryAmountData, useReadEntryExceptionsData } from '../hooks/useReportEntryData';
+import { useEntryAmountQuery, useEntryExceptionsQuery } from '../queries/useReportEntryQuery';
+import { useUpdateEntryAmountMutation } from '../queries/useUpdateEntryAmountMutation';
 
 const Entry = () => {
+  const {entryId} = useContext(ReportEntryQueryContext);
   const componentRef = useFlashOnRender();
-  const {entryId, updateEntryAmount} = useReportEntryData();
-  const amount = useReadEntryAmountData();
-  const exceptions = useReadEntryExceptionsData();
+  const amount = useEntryAmountQuery();
+  const exceptions = useEntryExceptionsQuery();
+  const {mutate: updateEntryAmountMutation} = useUpdateEntryAmountMutation();
 
   return (
     <div ref={componentRef} className="component">
       {entryId}
       &nbsp;
-      {!exceptions.isFetching && exceptions.data?.length ? '🗲' : '☀'}
-      {!amount.isFetching && (
-        <input type="button" value={`$${amount.data}`} onClick={() => updateEntryAmount({entryId})} />
+      {!exceptions.isLoading && exceptions.data?.length ? '🗲' : '☀'}
+      {!amount.isLoading && (
+        <input type="button" value={`$${amount.data}`} onClick={() => updateEntryAmountMutation({entryId})} />
       )}
     </div>
   );

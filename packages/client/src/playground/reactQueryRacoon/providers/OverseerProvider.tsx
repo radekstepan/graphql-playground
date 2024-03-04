@@ -3,7 +3,6 @@ import debounce from "debounce";
 import { AtomStateContext } from "./AtomStateProvider";
 import {queriesAtom } from "../atoms/queriesAtom";
 import { useAtomLazy } from "../hooks/useAtom";
-import { useOverseer } from "../hooks/useOverseer";
 import { type RequestDataEvent, requestDataEvent } from "../events/requestDataEvent";
 import { type TriggerRequestEvent, triggerRequestEvent } from "../events/triggerRequestEvent";
 import { EventEmitter } from "../classes/EventEmitter";
@@ -22,12 +21,13 @@ export interface OverseerValue {
 }
 
 const defaultValue: OverseerValue = {
-  events: new EventEmitter<Events>(),
+  events: new EventEmitter<Events>()
 };
 
 export const OverseerContext = createContext<OverseerValue>(defaultValue);
 
 export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
+  const {events} = useContext(OverseerContext);
   const context = useContext(AtomStateContext);
   if (!context) {
     throw new Error('OverseerProvider must be used within an AtomStateProvider');
@@ -35,8 +35,6 @@ export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
 
   // A set of pending requests.
   const requestsRef = useRef(new Set<QueryKey>());
-
-  const {events} = useOverseer();
 
   const [getQueries, setQueries] = useAtomLazy(queriesAtom);
 
@@ -61,9 +59,5 @@ export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
     triggerRequests();
   }), []);
 
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 };

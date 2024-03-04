@@ -1,6 +1,6 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReportCashAdvancesQuery } from '../hooks/useReportCashAdvancesQuery';
+import { useReportCashAdvancesQuery } from '../queries/useReportCashAdvancesQuery';
 
 const ReportCashAdvances = () => {
   const componentRef = useFlashOnRender();

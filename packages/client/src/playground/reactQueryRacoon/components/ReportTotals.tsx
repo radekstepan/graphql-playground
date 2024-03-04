@@ -1,14 +1,14 @@
 import React from 'react'
 import { useFlashOnRender } from '../hooks/useFlashOnRender';
-import { useReadReportTotalAmountData } from '../hooks/useReportData';
+import { useReportTotalAmountQuery } from '../queries/useReportQuery';
 
 const ReportTotals = () => {
   const componentRef = useFlashOnRender();
-  const totalAmount = useReadReportTotalAmountData();
+  const totalAmount = useReportTotalAmountQuery();
 
   return (
     <div ref={componentRef} className="component">
-      {!totalAmount.isFetching && `$${totalAmount.data}`}
+      {!totalAmount.isLoading && `$${totalAmount.data}`}
     </div>
   );
 };

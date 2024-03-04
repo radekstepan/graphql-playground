@@ -9,14 +9,14 @@ import Entries from './components/Entries';
 import Loading from './components/Loading';
 import {AtomStateProvider} from './providers/AtomStateProvider';
 import { OverseerProvider } from './providers/OverseerProvider';
-import {ReportDataProvider} from './providers/ReportDataProvider';
+import {ReportQueryProvider} from './providers/ReportQueryProvider';
 import './styles.less'
 
 function App() {
   return (
     <div id="racoon">
       <OverseerProvider>
-        <ReportDataProvider reportId="REP_1">
+        <ReportQueryProvider reportId="REP_1">
           <div className="flex section">
             <ReportName />
             <ReportTotals />
@@ -33,7 +33,7 @@ function App() {
           <div className="section">
             <Loading />
           </div>
-        </ReportDataProvider>
+        </ReportQueryProvider>
       </OverseerProvider>
     </div>
   );
