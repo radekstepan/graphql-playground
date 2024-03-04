@@ -1,8 +1,11 @@
-import React, {createContext, useMemo, type FC, type ReactNode, useRef, useEffect} from 'react';
+import React, {createContext, useMemo, useRef, useEffect, type FC, type ReactNode} from 'react';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {gqlClient} from '../client';
-import { useAtom } from '../hooks/useAtom';
 import { loadingAtom } from '../atoms/loadingAtom';
+import { useOverseer } from '../hooks/useOverseer';
+import { useAtomLazy } from '../hooks/useAtomLazy';
+import { useSetQueryData } from '../hooks/useSetQueryData';
+import { triggerRequestEvent } from '../events/triggerRequestEvent';
 import {keys, type ReportDataType} from '../keys';
 import { DataStatus } from '../interfaces';
 import {
@@ -14,10 +17,6 @@ import {
   type UpdateRacoonEntryAmountMutationVariables,
   type UpdateRacoonEntryReceiptMutationVariables
 } from '../../../__generated/graphql';
-import { useOverseer } from '../hooks/useOverseer';
-import { queriesAtom } from '../atoms/queriesAtom';
-import { useAtomLazy } from '../hooks/useAtomLazy';
-import { triggerRequestEvent } from '../events/triggerRequestEvent';
 
 export interface ReportEntryDataValue {
   reportId: string
@@ -55,8 +54,9 @@ export const ReportEntryDataProvider: FC<{
 
   const {events} = useOverseer();
 
-  const [, setQueries] = useAtomLazy(queriesAtom);
-  const [, setIsLoading] = useAtom(loadingAtom);
+  const [, setIsLoading] = useAtomLazy(loadingAtom);
+
+  const setQueryData = useSetQueryData();
 
   const includeFragmentsRef = useRef(new Set<
     | 'includeAmount'
@@ -70,17 +70,20 @@ export const ReportEntryDataProvider: FC<{
     // TODO disable initial fetch, how can we do this better?
     enabled: false,
     // Fetch the entry's requested fragments.
-    queryFn: () => gqlClient.request(GET_RACOON_ENTRY, {
-      id: entryId,
-      includeAmount: includeFragmentsRef.current.has('includeAmount'),
-      includeReceipt: includeFragmentsRef.current.has('includeReceipt'),
-      includeExceptions: includeFragmentsRef.current.has('includeExceptions')
-    }),
+    queryFn: () => {
+      setIsLoading(true);
+      return gqlClient.request(GET_RACOON_ENTRY, {
+        id: entryId,
+        includeAmount: includeFragmentsRef.current.has('includeAmount'),
+        includeReceipt: includeFragmentsRef.current.has('includeReceipt'),
+        includeExceptions: includeFragmentsRef.current.has('includeExceptions')
+      });
+    },
     // Save each data fragment to the cache under the appropriate key.
     onSuccess: (data) => {
       if (data.racoon.entry.amount !== undefined) {
         includeFragmentsRef.current.delete('includeAmount');
-        setQueries((queries) => queries.set(keys.reportEntry.getReportEntryAmount(reportId, entryId), DataStatus.LATEST));
+
         // TODO
         client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
           for (const entry of entries!) {
@@ -90,11 +93,12 @@ export const ReportEntryDataProvider: FC<{
             }
           }
         });
-        client.setQueryData(keys.reportEntry.getReportEntryAmount(reportId, entryId), data.racoon.entry.amount);
+
+        setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryAmount(reportId, entryId), data.racoon.entry.amount);
       }
       if (data.racoon.entry.receipt !== undefined) {
         includeFragmentsRef.current.delete('includeReceipt');
-        setQueries((queries) => queries.set(keys.reportEntry.getReportEntryReceipt(reportId, entryId), DataStatus.LATEST));
+
         // TODO
         client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
           for (const entry of entries!) {
@@ -104,13 +108,17 @@ export const ReportEntryDataProvider: FC<{
             }
           }
         });
-        client.setQueryData(keys.reportEntry.getReportEntryReceipt(reportId, entryId), data.racoon.entry.receipt);
+
+        setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryReceipt(reportId, entryId), data.racoon.entry.receipt);
       }
       if (data.racoon.entry.exceptions !== undefined) {
         includeFragmentsRef.current.delete('includeExceptions');
-        // TODO what about the report exceptions??
-        setQueries((queries) => queries.set(keys.report.getEntryExceptions(reportId, entryId), DataStatus.LATEST));
-        client.setQueryData(keys.report.getEntryExceptions(reportId, entryId), data.racoon.entry.exceptions);
+        setQueryData(DataStatus.LATEST, keys.report.getEntryExceptions(reportId, entryId), data.racoon.entry.exceptions);
+      }
+    },
+    onSettled: () => {
+      if (!includeFragmentsRef.current.size) {
+        setIsLoading(false);
       }
     }
   });
@@ -122,12 +130,8 @@ export const ReportEntryDataProvider: FC<{
       return gqlClient.request(UPDATE_RACOON_ENTRY_AMOUNT, variables);
     },
     onSuccess: () => {
-      setQueries((queries) => queries.set(keys.reportEntry.getReportEntryAmount(reportId, entryId), DataStatus.STALE));
-      setQueries((queries) => queries.set(keys.report.getReportTotalAmount(reportId), DataStatus.STALE));
-
-      // Invalidate the report total amount and entry queries so that components can ask for fresh data.
-      client.invalidateQueries(keys.reportEntry.getReportEntryAmount(reportId, entryId));
-      client.invalidateQueries(keys.report.getReportTotalAmount(reportId));
+      setQueryData(DataStatus.STALE, keys.reportEntry.getReportEntryAmount(reportId, entryId));
+      setQueryData(DataStatus.STALE, keys.report.getReportTotalAmount(reportId));
     }
   });
 
@@ -138,20 +142,9 @@ export const ReportEntryDataProvider: FC<{
       return gqlClient.request(UPDATE_RACOON_ENTRY_RECEIPT, variables);
     },
     onSuccess: () => {
-      // TODO wrap client.invalidateQueries and setQueries in a helper hook function.
-      setQueries((queries) => queries.set(keys.reportEntry.getReportEntryReceipt(reportId, entryId), DataStatus.STALE));
-      setQueries((queries) => queries.set(keys.report.getReportExceptions(reportId), DataStatus.STALE));
-      setQueries((queries) => queries.set(keys.report.getEntryExceptions(reportId, entryId), DataStatus.STALE));
-
-      // Invalidate the exceptions and entry queries so that components can ask for fresh data.
-      client.invalidateQueries(keys.reportEntry.getReportEntryReceipt(reportId, entryId));
-      client.invalidateQueries({
-        queryKey: keys.report.getReportExceptions(reportId),
-        // NOTE: We need to evict only the report exceptions, else the entry exceptions for
-        //  both entries (even if unchanged) will be refetched.
-        exact: true
-      });
-      client.invalidateQueries(keys.report.getEntryExceptions(reportId, entryId));
+      setQueryData(DataStatus.STALE, keys.report.getReportExceptions(reportId));
+      setQueryData(DataStatus.STALE, keys.report.getEntryExceptions(reportId, entryId));
+      setQueryData(DataStatus.STALE, keys.reportEntry.getReportEntryReceipt(reportId, entryId));
     }
   });
 
