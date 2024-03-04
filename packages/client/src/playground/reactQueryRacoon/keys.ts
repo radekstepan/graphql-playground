@@ -2,32 +2,61 @@ import { type GetRacoonReportQuery, type GetRacoonEntryQuery } from "../../__gen
 import { REPORT_KEY, ENTRIES_KEY, EXCEPTIONS_KEY } from "./constants";
 import { memoize } from "./utils";
 
-export type ReportDataType = GetRacoonReportQuery['racoon']['report'];
-export type ReportDataFragment = keyof Pick<ReportDataType, 'name'|'totalAmount'|'exceptions'|'entries'>;
-export type ReportQueryKey = [typeof REPORT_KEY, reportId: string, ReportDataFragment, typeof ENTRIES_KEY?, entryId?: string];
-export type ReportKeyFunction = (reportId: string) => ReportQueryKey;
+export const ReportNameType = "ReportName" as const;
+export const ReportTotalAmountType = "ReportTotalAmount" as const;
+export const ReportEntriesType = "ReportEntries" as const;
+export const ReportExceptionsType = "ReportExceptions" as const;
+export const ReportEntryExceptionsType = "ReportEntryExceptions" as const;
 
 const reportKeys = {
-  getReportName: memoize((reportId: string): ReportQueryKey => [REPORT_KEY, reportId, 'name']),
-  getReportTotalAmount: memoize((reportId: string): ReportQueryKey => [REPORT_KEY, reportId, 'totalAmount']),
-  getReportEntries: memoize((reportId: string): ReportQueryKey => [REPORT_KEY, reportId, ENTRIES_KEY]),
-  getReportExceptions: memoize((reportId: string): ReportQueryKey => [REPORT_KEY, reportId, EXCEPTIONS_KEY]),
-  getEntryExceptions: memoize((reportId: string, entryId: string): ReportQueryKey => [REPORT_KEY, reportId, EXCEPTIONS_KEY, ENTRIES_KEY, entryId]),
+  getReportName: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, 'name'] as const, type: ReportNameType})),
+  getReportTotalAmount: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, 'totalAmount'] as const, type: ReportTotalAmountType})),
+  getReportEntries: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY] as const, type: ReportEntriesType})),
+  getReportExceptions: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, EXCEPTIONS_KEY] as const, type: ReportExceptionsType})),
+  getEntryExceptions: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, EXCEPTIONS_KEY, ENTRIES_KEY, entryId] as const, type: ReportEntryExceptionsType})),
 };
 
-type ReportEntryDataType = GetRacoonEntryQuery['racoon']['entry'];
-export type ReportEntryDataFragment = keyof Pick<ReportEntryDataType, 'amount'|'receipt'|'exceptions'>;
-export type ReportEntryQueryKey = [typeof REPORT_KEY, reportId: string, typeof ENTRIES_KEY, string, ReportEntryDataFragment?];
-export type ReportEntryKeyFunction = (reportId: string, entryId: string) => ReportEntryQueryKey;
+export const ReportEntryType = "ReportEntry" as const;
+export const ReportEntryAmountType = "ReportEntryAmount" as const;
+export const ReportEntryReceiptType = "ReportEntryReceipt" as const;
 
 const reportEntryKeys = {
-  getReportEntry: memoize((reportId: string, entryId: string): ReportEntryQueryKey => [REPORT_KEY, reportId, ENTRIES_KEY, entryId]),
-  getReportEntryAmount: memoize((reportId: string, entryId: string): ReportEntryQueryKey => [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'amount']),
-  getReportEntryReceipt: memoize((reportId: string, entryId: string): ReportEntryQueryKey => [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'receipt']),
+  getReportEntry: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId] as const, type: ReportEntryType})),
+  getReportEntryAmount: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'amount'] as const, type: ReportEntryAmountType})),
+  getReportEntryReceipt: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'receipt'] as const, type: ReportEntryReceiptType})),
 };
 
-export type QueryKey = ReportQueryKey | ReportEntryQueryKey;
+export type ReportKeyFunction = (reportId: string) => ReturnType<typeof reportKeys[keyof typeof reportKeys]>;
+export type ReportEntryKeyFunction = (reportId: string, entryId: string) => ReturnType<typeof reportEntryKeys[keyof typeof reportEntryKeys]>;
+
+export type QueryKey =
+  | ReturnType<typeof reportKeys[keyof typeof reportKeys]>
+  | ReturnType<typeof reportEntryKeys[keyof typeof reportEntryKeys]>;
 export type KeyFunction = ReportKeyFunction | ReportEntryKeyFunction;
+
+// Key type to data type mapping.
+export type QueryDataType = {
+  [ReportNameType]: GetRacoonReportQuery['racoon']['report']['name'];
+  [ReportTotalAmountType]: GetRacoonReportQuery['racoon']['report']['totalAmount'];
+  // NOTE: notice that we do not make any claims about the rest of the fields, we only need the id. If you wanted to access the rest of
+  //  the fields, you'd have to make sure that mutating a single entry would update the cache in the list of entries as well. Yes,
+  //  data duplication. Example:
+  // client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
+  //   for (const entry of entries ?? []) {
+  //     // An example of how you'd update the receipt of a single entry.
+  //     if (entry.id === entryId) {
+  //       entry.receipt = data.racoon.entry.receipt;
+  //       break;
+  //     }
+  //   }
+  // });
+  [ReportEntriesType]: Pick<NonNullable<GetRacoonReportQuery['racoon']['report']['entries']>[number], 'id'>[];
+  [ReportExceptionsType]: GetRacoonReportQuery['racoon']['report']['exceptions'];
+  [ReportEntryExceptionsType]: GetRacoonEntryQuery['racoon']['entry']['exceptions'];
+  [ReportEntryType]: GetRacoonEntryQuery['racoon']['entry'];
+  [ReportEntryAmountType]: GetRacoonEntryQuery['racoon']['entry']['amount'];
+  [ReportEntryReceiptType]: GetRacoonEntryQuery['racoon']['entry']['receipt'];
+}
 
 export const keys = {
   report: reportKeys,

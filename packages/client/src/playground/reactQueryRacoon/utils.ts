@@ -1,3 +1,5 @@
+import { type QueryKey } from "./keys";
+
 export const listById = <T, K extends keyof T>(list: T[], idProp: K) => {
   const byId: Record<string, T[]> = {};
   return list.reduce((acc, obj) => {
@@ -26,14 +28,14 @@ export function memoize<T extends AnyFunction>(fn: T): T {
   } as T;
 };
 
-// Remove child arrays from an array of arrays.
-export function removeChildArrays<T extends any[]>(arrays: T[]): T[] {
+// Remove child keys from an array of keys.
+export function removeChildKeys<T extends QueryKey>(arrays: T[]): T[] {
   const isChild = (possibleParent: T, possibleChild: T): boolean => {
     // A child must be longer than its parent.
-    if (possibleParent.length >= possibleChild.length) {
+    if (possibleParent.key.length >= possibleChild.key.length) {
       return false;
     }
-    return possibleParent.every((element, index) => element === possibleChild[index]);
+    return possibleParent.key.every((element, index) => element === possibleChild.key[index]);
   };
 
   return arrays.filter((possibleChild) =>

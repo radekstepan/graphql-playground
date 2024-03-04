@@ -6,7 +6,7 @@ import { useOverseer } from '../hooks/useOverseer';
 import { useAtomLazy } from '../hooks/useAtomLazy';
 import { useSetQueryData } from '../hooks/useSetQueryData';
 import { triggerRequestEvent } from '../events/triggerRequestEvent';
-import {keys, type ReportDataType} from '../keys';
+import {keys} from '../keys';
 import { DataStatus } from '../interfaces';
 import {
   GET_RACOON_ENTRY,
@@ -66,8 +66,7 @@ export const ReportEntryDataProvider: FC<{
 
   // Main query that fetches the entry data and its fragments.
   const {refetch} = useQuery({
-    queryKey: [`$GetReportEntry:${entryId}`],
-    // TODO disable initial fetch, how can we do this better?
+    queryKey: [`$GetReportEntry:${entryId}`], // <-- ignore this key
     enabled: false,
     // Fetch the entry's requested fragments.
     queryFn: () => {
@@ -83,32 +82,12 @@ export const ReportEntryDataProvider: FC<{
     onSuccess: (data) => {
       if (data.racoon.entry.amount !== undefined) {
         includeFragmentsRef.current.delete('includeAmount');
-
-        // TODO
-        client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
-          for (const entry of entries!) {
-            if (entry.id === entryId) {
-              entry.amount = data.racoon.entry.amount!;
-              break;
-            }
-          }
-        });
-
+        // NOTE: the report entries list is not modified.
         setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryAmount(reportId, entryId), data.racoon.entry.amount);
       }
       if (data.racoon.entry.receipt !== undefined) {
         includeFragmentsRef.current.delete('includeReceipt');
-
-        // TODO
-        client.setQueryData<ReportDataType['entries']|void>(keys.report.getReportEntries(reportId), (entries) => {
-          for (const entry of entries!) {
-            if (entry.id === entryId) {
-              entry.receipt = data.racoon.entry.receipt;
-              break;
-            }
-          }
-        });
-
+        // NOTE: the report entries list is not modified.
         setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryReceipt(reportId, entryId), data.racoon.entry.receipt);
       }
       if (data.racoon.entry.exceptions !== undefined) {

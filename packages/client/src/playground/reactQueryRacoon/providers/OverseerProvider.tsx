@@ -5,7 +5,7 @@ import {queriesAtom } from "../atoms/queriesAtom";
 import { AtomStateContext } from "./AtomStateProvider";
 import { useAtomLazy } from "../hooks/useAtomLazy";
 import { DataStatus } from "../interfaces";
-import { removeChildArrays } from "../utils";
+import { removeChildKeys } from "../utils";
 import { type RequestDataEvent, requestDataEvent } from "../events/requestDataEvent";
 import { type TriggerRequestEvent, triggerRequestEvent } from "../events/triggerRequestEvent";
 import { EventEmitter } from "../classes/EventEmitter";
@@ -42,7 +42,7 @@ export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
     if (!requestsRef.current.size) {
       return;
     }
-    const res = removeChildArrays(Array.from(requestsRef.current));
+    const res = removeChildKeys(Array.from(requestsRef.current));
     requestsRef.current.clear();
     events.emit(triggerRequestEvent, res);
   }, 200);
