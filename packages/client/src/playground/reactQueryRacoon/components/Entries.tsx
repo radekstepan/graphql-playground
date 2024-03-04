@@ -11,7 +11,7 @@ const Entries = ({reportId}: {reportId: string}) => {
 
   return (
     <div ref={componentRef}>{
-      entries?.map((entry) => (
+      !entries.loading && entries.data?.map((entry) => (
         <div key={entry.id} className="flex">
           <ReportEntryDataProvider reportId={reportId} entryId={entry.id}>
             <Entry />

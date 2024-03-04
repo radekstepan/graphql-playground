@@ -8,7 +8,7 @@ const ReportName = () => {
 
   return (
     <div ref={componentRef} className="component">
-      {name}
+      {!name.loading && name.data}
     </div>
   );
 };

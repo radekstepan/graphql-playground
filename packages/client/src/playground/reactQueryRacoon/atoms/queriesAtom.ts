@@ -6,4 +6,5 @@ export type Queries = Map<QueryKey, DataStatus>;
 
 const queries: Queries = new Map();
 
-export const queriesAtom = atom('queries', queries);
+// The staleness of all queries (fragments).
+export const queriesAtom = atom(queries);

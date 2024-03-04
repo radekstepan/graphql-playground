@@ -9,11 +9,13 @@ const Receipt = () => {
 
   return (
     <div ref={componentRef} className="component">
-      <input
-        type="button"
-        value={receipt ? 'Detach Receipt' : 'Attach Receipt'}
-        onClick={() => updateEntryReceipt({id: entryId})}
-      />
+      {!receipt.loading && (
+        <input
+          type="button"
+          value={receipt.data ? 'Detach Receipt' : 'Attach Receipt'}
+          onClick={() => updateEntryReceipt({id: entryId})}
+        />
+      )}
     </div>
   );
 };

@@ -4,8 +4,11 @@ import { useOverseer } from "./useOverseer";
 import { requestDataEvent } from "../events/requestDataEvent";
 import { QueryDataType, QueryKey } from "../keys";
 
-// Requests and reads data from the cache.
-export function useQuery<T extends QueryKey>(key: T): QueryDataType[T['type']] | null | undefined {
+// Components use this to request and read data from the cache.
+export function useQuery<T extends QueryKey>(key: T): {
+  data: QueryDataType[T['type']] | null | undefined
+  loading: boolean
+} {
   const getQueryData = useGetQueryData();
   const {events} = useOverseer();
 
@@ -19,5 +22,5 @@ export function useQuery<T extends QueryKey>(key: T): QueryDataType[T['type']] |
     }
   });
 
-  return data;
+  return {data, loading: data === undefined};
 };

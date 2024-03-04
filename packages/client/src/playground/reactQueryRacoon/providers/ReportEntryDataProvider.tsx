@@ -1,9 +1,9 @@
 import React, {createContext, useMemo, useRef, useEffect, type FC, type ReactNode} from 'react';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
+import {useQuery, useMutation} from '@tanstack/react-query'
 import {gqlClient} from '../client';
 import { loadingAtom } from '../atoms/loadingAtom';
 import { useOverseer } from '../hooks/useOverseer';
-import { useAtomLazy } from '../hooks/useAtomLazy';
+import { useAtomSetter } from '../hooks/useAtom';
 import { useSetQueryData } from '../hooks/useSetQueryData';
 import { triggerRequestEvent } from '../events/triggerRequestEvent';
 import {keys} from '../keys';
@@ -50,11 +50,9 @@ export const ReportEntryDataProvider: FC<{
   entryId: string,
   children: ReactNode
 }> = ({ reportId, entryId, children }) => {
-  const client = useQueryClient();
-
   const {events} = useOverseer();
 
-  const [, setIsLoading] = useAtomLazy(loadingAtom);
+  const setIsLoading = useAtomSetter(loadingAtom);
 
   const setQueryData = useSetQueryData();
 
@@ -127,6 +125,8 @@ export const ReportEntryDataProvider: FC<{
     }
   });
 
+  // Refetch the data when one of our known query keys is triggered.
+  // NOTE: refetch doesn't accept arguments, so we need to use this and a ref.
   useEffect(() => events.on(triggerRequestEvent, (queryKeys) => {
     for (const queryKey of queryKeys) {
       switch (queryKey) {
@@ -144,7 +144,6 @@ export const ReportEntryDataProvider: FC<{
       }
     }
 
-    // NOTE: refetch doesn't accept arguments, so we need to use a ref.
     if (includeFragmentsRef.current.size) {
       refetch();
     }

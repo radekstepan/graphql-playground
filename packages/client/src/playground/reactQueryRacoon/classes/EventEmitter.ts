@@ -1,14 +1,15 @@
 export class EventEmitter<T> {
   // Event type to event listeners map.
-  private events: Map<keyof T, ((data: any) => void)[]> = new Map();
+  private listeners: Map<keyof T, ((data: any) => void)[]> = new Map();
   // Queue of events that were emitted before any listeners were attached.
   private eventQueue: Array<{ event: keyof T; data: any }> = [];
 
+  // Add a listener for the given event.
   on<K extends keyof T>(event: K, listener: (data: T[K]) => void): () => void {
-    let listeners = this.events.get(event);
+    let listeners = this.listeners.get(event);
     if (!listeners) {
       listeners = [];
-      this.events.set(event, listeners);
+      this.listeners.set(event, listeners);
     }
     listeners.push(listener as ((data: any) => void));
 
@@ -23,15 +24,16 @@ export class EventEmitter<T> {
 
     // Return an unsubscribe function.
     return () => {
-      const currentListeners = this.events.get(event);
+      const currentListeners = this.listeners.get(event);
       if (currentListeners) {
-        this.events.set(event, currentListeners.filter(l => l !== listener));
+        this.listeners.set(event, currentListeners.filter(l => l !== listener));
       }
     };
   }
 
+  // Emit an event with the given data payload.
   emit<K extends keyof T>(event: K, data: T[K]): void {
-    const listeners = this.events.get(event);
+    const listeners = this.listeners.get(event);
     if (listeners?.length) {
       for (const listener of listeners) {
         listener(data);

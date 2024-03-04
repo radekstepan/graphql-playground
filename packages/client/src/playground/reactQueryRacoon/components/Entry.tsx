@@ -12,9 +12,9 @@ const Entry = () => {
     <div ref={componentRef} className="component">
       {entryId}
       &nbsp;
-      {exceptions?.length ? '🗲' : '☀'}
-      {amount !== undefined && (
-        <input type="button" value={`$${amount}`} onClick={() => updateEntryAmount({id: entryId})} />
+      {!exceptions.loading && exceptions.data?.length ? '🗲' : '☀'}
+      {!amount.loading && (
+        <input type="button" value={`$${amount.data}`} onClick={() => updateEntryAmount({id: entryId})} />
       )}
     </div>
   );

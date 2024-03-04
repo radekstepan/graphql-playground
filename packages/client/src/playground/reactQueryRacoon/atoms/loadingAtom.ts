@@ -1,3 +1,4 @@
 import {atom} from '../providers/AtomStateProvider';
 
-export const loadingAtom = atom('loading', false);
+// Loading state of all queries.
+export const loadingAtom = atom(false);

@@ -1,16 +1,17 @@
-import React, { type FC, type ReactNode, useEffect, useContext, useRef, createContext } from "react";
+import React, { useEffect, useContext, useRef, createContext, type FC, type ReactNode } from "react";
 import debounce from "debounce";
-import { type QueryKey } from "../keys";
-import {queriesAtom } from "../atoms/queriesAtom";
 import { AtomStateContext } from "./AtomStateProvider";
-import { useAtomLazy } from "../hooks/useAtomLazy";
-import { DataStatus } from "../interfaces";
-import { removeChildKeys } from "../utils";
+import {queriesAtom } from "../atoms/queriesAtom";
+import { useAtomLazy } from "../hooks/useAtom";
+import { useOverseer } from "../hooks/useOverseer";
 import { type RequestDataEvent, requestDataEvent } from "../events/requestDataEvent";
 import { type TriggerRequestEvent, triggerRequestEvent } from "../events/triggerRequestEvent";
 import { EventEmitter } from "../classes/EventEmitter";
-import { useOverseer } from "../hooks/useOverseer";
+import { removeChildKeys } from "../utils";
+import { type QueryKey } from "../keys";
+import { DataStatus } from "../interfaces";
 
+// Overseer manages requesting data and triggering requests.
 interface Events {
   [requestDataEvent]: RequestDataEvent;
   [triggerRequestEvent]: TriggerRequestEvent;
@@ -31,6 +32,8 @@ export const OverseerProvider: FC<{children: ReactNode}> = ({ children }) => {
   if (!context) {
     throw new Error('OverseerProvider must be used within an AtomStateProvider');
   }
+
+  // A set of pending requests.
   const requestsRef = useRef(new Set<QueryKey>());
 
   const {events} = useOverseer();

@@ -1,9 +1,9 @@
 import React, {createContext, useMemo, useEffect, useRef, type FC, type ReactNode} from 'react';
-import {useQuery, useQueryClient} from '@tanstack/react-query'
+import {useQuery} from '@tanstack/react-query'
 import {gqlClient} from '../client';
 import { triggerRequestEvent } from '../events/triggerRequestEvent';
 import { loadingAtom } from '../atoms/loadingAtom';
-import { useAtomLazy } from '../hooks/useAtomLazy';
+import { useAtomSetter } from '../hooks/useAtom';
 import { useOverseer } from '../hooks/useOverseer';
 import { useSetQueryData } from '../hooks/useSetQueryData';
 import { useGetQueryData } from '../hooks/useGetQueryData';
@@ -26,7 +26,7 @@ export const ReportDataContext = createContext<ReportDataValue>(defaultValue);
 export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = ({ reportId, children }) => {
   const {events} = useOverseer();
 
-  const [, setIsLoading] = useAtomLazy(loadingAtom);
+  const setIsLoading = useAtomSetter(loadingAtom);
 
   const setQueryData = useSetQueryData();
   const getQueryData = useGetQueryData();
@@ -98,6 +98,8 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
     }
   });
 
+  // Refetch the data when one of our known query keys is triggered.
+  // NOTE: refetch doesn't accept arguments, so we need to use this and a ref.
   useEffect(() => events.on(triggerRequestEvent, (queryKeys) => {
     for (const queryKey of queryKeys) {
       switch (queryKey) {
@@ -118,7 +120,6 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
       }
     }
 
-    // NOTE: refetch doesn't accept arguments, so we need to use a ref.
     if (includeFragmentsRef.current.size) {
       refetch();
     }

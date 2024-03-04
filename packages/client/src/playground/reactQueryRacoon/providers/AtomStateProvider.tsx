@@ -19,9 +19,12 @@ interface AtomStateContextType {
 type CallbackFn<T> = (value: T) => void;
 type UnsubscribeFn = () => void;
 
-// Init an atom under a given key.
-// TODO add a hash to the key to avoid collisions.
-export const atom = <T,>(key: AtomKey, value: T, options?: {setter: SetterFn<T>}): Atom<T> => ({ key, value, setter: options?.setter });
+// Init an atom.
+export const atom = <T,>(value: T, options?: {setter: SetterFn<T>}): Atom<T> => ({
+  key: crypto.randomUUID(), // avoid collisions
+  value,
+  ...options?.setter && {setter: options.setter}
+});
 
 export const AtomStateContext = createContext<AtomStateContextType | null>(null);
 
