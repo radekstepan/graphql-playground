@@ -8,7 +8,7 @@ const ReportName = () => {
 
   return (
     <div ref={componentRef} className="component">
-      {!name.loading && name.data}
+      {!name.isFetching && <strong>{name.data}</strong>}
     </div>
   );
 };

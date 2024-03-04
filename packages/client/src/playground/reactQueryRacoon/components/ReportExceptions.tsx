@@ -8,10 +8,11 @@ const ReportExceptions = () => {
 
   return (
     <div ref={componentRef} className="component">
-      {!exceptions.loading && !exceptions.data?.length && 'No exceptions'}
-      {!exceptions.loading && exceptions.data?.map((exception, index) => (
+      {!exceptions.isFetching && !exceptions.data?.length && 'No exceptions'}
+      {!exceptions.isFetching && exceptions.data?.map((exception, index) => (
         <div key={index}>{exception.entryId}: {exception.text}</div>
       ))}
+      {exceptions.isFetching && '...'}
     </div>
   );
 };

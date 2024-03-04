@@ -9,11 +9,11 @@ const Receipt = () => {
 
   return (
     <div ref={componentRef} className="component">
-      {!receipt.loading && (
+      {!receipt.isFetching && (
         <input
           type="button"
           value={receipt.data ? 'Detach Receipt' : 'Attach Receipt'}
-          onClick={() => updateEntryReceipt({id: entryId})}
+          onClick={() => updateEntryReceipt({entryId})}
         />
       )}
     </div>

@@ -13,29 +13,44 @@ const resolvers = {
   },
   Racoon: {
     report: () => racoon,
-    entry: (_root: void, {id}) => {
-      const entry = getEntry(id);
-      const exceptions = racoon.exceptions.filter(e => e.entryId === id);
+    entry: (_root: void, {entryId}) => {
+      const entry = getEntry(entryId);
+      const exceptions = racoon.exceptions.filter(e => e.entryId === entryId);
       return {...entry, exceptions};
-    }
+    },
   },
+  RacoonCashAdvance: {
+    amount: async () => {
+      // Simulate a slow network request.
+      await new Promise(resolve => setTimeout(resolve, 1e3));
+      return racoon.cashAdvances[0]?.amount ?? 0;
+    },
+  },  
   RacoonMutation: {
-    updateEntryAmount: (_root: void, {id}) => {
-      const entry = getEntry(id);
+    updateEntryAmount: (_root: void, {entryId}) => {
+      const entry = getEntry(entryId);
 
       entry.amount += 1;
       racoon.totalAmount += 1;
+
+      if (racoon.cashAdvances[0]) {
+        racoon.cashAdvances[0].amount -= 1;
+        if (!racoon.cashAdvances[0].amount) {
+          racoon.cashAdvances = [];
+        }
+      }
+
       return ok;
     },
-    updateEntryReceipt: (_root: void, {id}) => {
-      const entry = getEntry(id);
+    updateEntryReceipt: (_root: void, {entryId}) => {
+      const entry = getEntry(entryId);
 
       if (entry.receipt) {
         entry.receipt = null;
-        racoon.exceptions.push({entryId: id, text: 'Missing receipt!'});
+        racoon.exceptions.push({entryId, text: 'Missing receipt!'});
       } else {
         entry.receipt = 'https://example.com/receipt.jpg';
-        const exception = racoon.exceptions.findIndex(e => e.entryId === id);
+        const exception = racoon.exceptions.findIndex(e => e.entryId === entryId);
         racoon.exceptions.splice(exception, 1);
       }
       return ok;

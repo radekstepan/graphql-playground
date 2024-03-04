@@ -12,9 +12,9 @@ const Entry = () => {
     <div ref={componentRef} className="component">
       {entryId}
       &nbsp;
-      {!exceptions.loading && exceptions.data?.length ? '🗲' : '☀'}
-      {!amount.loading && (
-        <input type="button" value={`$${amount.data}`} onClick={() => updateEntryAmount({id: entryId})} />
+      {!exceptions.isFetching && exceptions.data?.length ? '🗲' : '☀'}
+      {!amount.isFetching && (
+        <input type="button" value={`$${amount.data}`} onClick={() => updateEntryAmount({entryId})} />
       )}
     </div>
   );

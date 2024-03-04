@@ -8,7 +8,7 @@ const ReportTotals = () => {
 
   return (
     <div ref={componentRef} className="component">
-      {!totalAmount.loading && `$${totalAmount.data}`}
+      {!totalAmount.isFetching && `$${totalAmount.data}`}
     </div>
   );
 };

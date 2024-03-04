@@ -6,14 +6,14 @@ import {keys} from "../keys";
 export const useReportEntryData = () => useContext(ReportEntryDataContext);
 
 export const useReadEntryAmountData = () => {
-  const { reportId, entryId } = useContext(ReportEntryDataContext);
+  const { reportId, entryId } = useReportEntryData();
   return useQuery(keys.reportEntry.getReportEntryAmount(reportId, entryId));
 };
 export const useReadEntryReceiptData = () => {
-  const { reportId, entryId } = useContext(ReportEntryDataContext);
+  const { reportId, entryId } = useReportEntryData();
   return useQuery(keys.reportEntry.getReportEntryReceipt(reportId, entryId));
 };
 export const useReadEntryExceptionsData = () => {
-  const { reportId, entryId } = useContext(ReportEntryDataContext);
+  const { reportId, entryId } = useReportEntryData();
   return useQuery(keys.report.getEntryExceptions(reportId, entryId));
 };

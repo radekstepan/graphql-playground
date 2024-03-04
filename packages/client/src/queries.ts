@@ -51,13 +51,14 @@ export const GET_EXPENSES = graphql(`#graphql
 
 export const GET_RACOON_REPORT = graphql(`#graphql
   query GetRacoonReport(
+    $reportId: String!,
     $includeName: Boolean!,
     $includeTotalAmount: Boolean!,
     $includeExceptions: Boolean!,
     $includeEntries: Boolean!
   ) {
     racoon {
-      report {
+      report(reportId: $reportId) {
         id
         name @include(if: $includeName)
         totalAmount @include(if: $includeTotalAmount)
@@ -77,13 +78,13 @@ export const GET_RACOON_REPORT = graphql(`#graphql
 
 export const GET_RACOON_ENTRY = graphql(`#graphql
   query GetRacoonEntry(
-    $id: String!,
+    $entryId: String!,
     $includeAmount: Boolean!,
     $includeReceipt: Boolean!,
     $includeExceptions: Boolean!
   ) {
     racoon {
-      entry(id: $id) {
+      entry(entryId: $entryId) {
         id
         amount @include(if: $includeAmount)
         receipt @include(if: $includeReceipt)
@@ -96,10 +97,25 @@ export const GET_RACOON_ENTRY = graphql(`#graphql
   }
 `);
 
+export const GET_RACOON_CASH_ADVANCES = graphql(`#graphql
+  query GetRacoonCashAdvances(
+    $reportId: String!
+  ) {
+    racoon {
+      report(reportId: $reportId) {
+        cashAdvances {
+          id
+          amount
+        }
+      }
+    }
+  }
+`);
+
 export const UPDATE_RACOON_ENTRY_AMOUNT = graphql(`#graphql
-  mutation UpdateRacoonEntryAmount($id: String!) {
+  mutation UpdateRacoonEntryAmount($entryId: String!) {
     racoonMutation {
-      updateEntryAmount(id: $id) {
+      updateEntryAmount(entryId: $entryId) {
         ok
       }
     }
@@ -107,9 +123,9 @@ export const UPDATE_RACOON_ENTRY_AMOUNT = graphql(`#graphql
 `);
 
 export const UPDATE_RACOON_ENTRY_RECEIPT = graphql(`#graphql
-  mutation UpdateRacoonEntryReceipt($id: String!) {
+  mutation UpdateRacoonEntryReceipt($entryId: String!) {
     racoonMutation {
-      updateEntryReceipt(id: $id) {
+      updateEntryReceipt(entryId: $entryId) {
         ok
       }
     }

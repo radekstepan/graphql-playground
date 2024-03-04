@@ -70,7 +70,7 @@ export const ReportEntryDataProvider: FC<{
     queryFn: () => {
       setIsLoading(true);
       return gqlClient.request(GET_RACOON_ENTRY, {
-        id: entryId,
+        entryId,
         includeAmount: includeFragmentsRef.current.has('includeAmount'),
         includeReceipt: includeFragmentsRef.current.has('includeReceipt'),
         includeExceptions: includeFragmentsRef.current.has('includeExceptions')
@@ -107,8 +107,12 @@ export const ReportEntryDataProvider: FC<{
       return gqlClient.request(UPDATE_RACOON_ENTRY_AMOUNT, variables);
     },
     onSuccess: () => {
+      // Managed by us.
       setQueryData(DataStatus.STALE, keys.reportEntry.getReportEntryAmount(reportId, entryId));
+      // Managed by the ReportDataProvider.
       setQueryData(DataStatus.STALE, keys.report.getReportTotalAmount(reportId));
+      // A completely separate query not managed by any provider.
+      setQueryData(DataStatus.STALE, keys.report.getReportCashAdvances(reportId));
     }
   });
 

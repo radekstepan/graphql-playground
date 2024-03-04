@@ -1,10 +1,11 @@
-import { type GetRacoonReportQuery, type GetRacoonEntryQuery } from "../../__generated/graphql";
+import { type GetRacoonReportQuery, type GetRacoonEntryQuery, type GetRacoonCashAdvancesQuery } from "../../__generated/graphql";
 import { REPORT_KEY, ENTRIES_KEY, EXCEPTIONS_KEY } from "./constants";
 import { memoize } from "./utils";
 
 export const ReportNameType = "ReportName" as const;
 export const ReportTotalAmountType = "ReportTotalAmount" as const;
 export const ReportEntriesType = "ReportEntries" as const;
+export const ReportCashAdvancesType = "ReportCashAdvances" as const;
 export const ReportExceptionsType = "ReportExceptions" as const;
 export const ReportEntryExceptionsType = "ReportEntryExceptions" as const;
 
@@ -12,6 +13,7 @@ const reportKeys = {
   getReportName: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, 'name'] as const, type: ReportNameType})),
   getReportTotalAmount: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, 'totalAmount'] as const, type: ReportTotalAmountType})),
   getReportEntries: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY] as const, type: ReportEntriesType})),
+  getReportCashAdvances: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, 'cashAdvances'] as const, type: ReportCashAdvancesType})),
   getReportExceptions: memoize((reportId: string) => ({key: [REPORT_KEY, reportId, EXCEPTIONS_KEY] as const, type: ReportExceptionsType})),
   getEntryExceptions: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, EXCEPTIONS_KEY, ENTRIES_KEY, entryId] as const, type: ReportEntryExceptionsType})),
 };
@@ -51,6 +53,7 @@ export type QueryDataType = {
   //   }
   // });
   [ReportEntriesType]: Pick<NonNullable<GetRacoonReportQuery['racoon']['report']['entries']>[number], 'id'>[];
+  [ReportCashAdvancesType]: GetRacoonCashAdvancesQuery; // <-- full query
   [ReportExceptionsType]: GetRacoonReportQuery['racoon']['report']['exceptions'];
   [ReportEntryExceptionsType]: GetRacoonEntryQuery['racoon']['entry']['exceptions'];
   [ReportEntryType]: GetRacoonEntryQuery['racoon']['entry'];

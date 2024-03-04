@@ -51,6 +51,7 @@ export const ReportDataProvider: FC<{reportId: string, children: ReactNode}> = (
     queryFn: () => {
       setIsLoading(true);
       return gqlClient.request(GET_RACOON_REPORT, {
+        reportId,
         includeName: includeFragmentsRef.current.has('includeName'),
         includeTotalAmount: includeFragmentsRef.current.has('includeTotalAmount'),
         includeExceptions: includeFragmentsRef.current.has('includeExceptions'),
