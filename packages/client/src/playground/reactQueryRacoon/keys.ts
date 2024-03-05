@@ -18,12 +18,10 @@ const reportKeys = {
   getEntryExceptions: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, EXCEPTIONS_KEY, ENTRIES_KEY, entryId] as const, type: ReportEntryExceptionsType})),
 };
 
-export const ReportEntryType = "ReportEntry" as const;
 export const ReportEntryAmountType = "ReportEntryAmount" as const;
 export const ReportEntryReceiptType = "ReportEntryReceipt" as const;
 
 const reportEntryKeys = {
-  getReportEntry: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId] as const, type: ReportEntryType})),
   getReportEntryAmount: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'amount'] as const, type: ReportEntryAmountType})),
   getReportEntryReceipt: memoize((reportId: string, entryId: string) => ({key: [REPORT_KEY, reportId, ENTRIES_KEY, entryId, 'receipt'] as const, type: ReportEntryReceiptType})),
 };
@@ -56,7 +54,6 @@ export type QueryDataType = {
   [ReportCashAdvancesType]: GetRacoonCashAdvancesQuery; // <-- full query
   [ReportExceptionsType]: GetRacoonReportQuery['racoon']['report']['exceptions'];
   [ReportEntryExceptionsType]: GetRacoonEntryQuery['racoon']['entry']['exceptions'];
-  [ReportEntryType]: GetRacoonEntryQuery['racoon']['entry'];
   [ReportEntryAmountType]: GetRacoonEntryQuery['racoon']['entry']['amount'];
   [ReportEntryReceiptType]: GetRacoonEntryQuery['racoon']['entry']['receipt'];
 }

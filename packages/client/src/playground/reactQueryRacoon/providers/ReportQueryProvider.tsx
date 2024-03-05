@@ -71,7 +71,6 @@ export const ReportQueryProvider: FC<{reportId: string, children: ReactNode}> = 
         includeFragmentsRef.current.delete('includeEntries');
         // Save the data for each entry.
         for (const entry of data.racoon.report.entries) {
-          setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntry(reportId, entry.id), entry);
           setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryAmount(reportId, entry.id), entry.amount);
           setQueryData(DataStatus.LATEST, keys.reportEntry.getReportEntryReceipt(reportId, entry.id), entry.receipt);
         }
