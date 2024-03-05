@@ -5,7 +5,7 @@ import { useAtomLazy } from "./useAtom";
 import { useGetQueryData } from "./useGetQueryData";
 import { requestDataEvent } from "../events/requestDataEvent";
 import { queriesAtom } from "../atoms/queriesAtom";
-import { QueryDataType, QueryKey } from "../keys";
+import { type QueryDataType, type QueryKey } from "../keys";
 import { DataStatus } from "../interfaces";
 
 // Components use this to request and read data from the cache.
@@ -29,8 +29,7 @@ export function useQuery<T extends QueryKey>(key: T): {
   });
 
   // Is our fragment fetching?
-  const queries = getQueries();
-  if (queries.get(key) !== DataStatus.LATEST) {
+  if (getQueries().get(key) !== DataStatus.LATEST) {
     return {data, isFetching: true, isLoading: false};
   }
 

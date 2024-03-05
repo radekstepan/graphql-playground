@@ -7,6 +7,9 @@ const client = () => new QueryClient({
       // https://tanstack.com/query/v4/docs/guides/caching
       staleTime: Infinity,
       refetchOnWindowFocus: false,
+      // Make sure we re-render all hooks even if the data doesn't
+      //  change between fetches.
+      structuralSharing: false
     }
   }
 });

@@ -32,9 +32,10 @@ An example "report" page that has an exceptions and an entry component. The entr
 1. Complete control = completely complex
 1. `react-query`
   - If you have multiple `useQuery` hooks with the same key, you can't guarantee in which order they get called and React Query will just call one of the callbacks, rather than both. It makes sense that it would deduplicate these calls, but there's no `useWatchQuery`, so you can only have one `useQuery` unique key combo. This became a problem as I both want to use `useQuery` hooks to read data off a key, and also to "subscribe" when a particular key is invalidated elsewhere in the code.
-  - `react-query` does not create any references between data in a cache. If you need to store a list of data, a strategy is to create 2 new keys: `byId` and store a list of objects by their `id` for easy access and `order` to store the actual order of the `ids`.
-  - `react-query` does not support passing of variables into a `refetch` function.
-  - `react-query` removes even more [util functions](https://tanstack.com/query/latest/docs/framework/react/guides/migrating-to-v5#callbacks-on-usequery-and-queryobserver-have-been-removed) in v5
+  - It does not create any references between data in a cache. If you need to store a list of data, a strategy is to create 2 new keys: `byId` and store a list of objects by their `id` for easy access and `order` to store the actual order of the `ids`.
+  - It does not support passing of variables into a `refetch` function.
+  - It has a concept called "structural sharing" which is enabled by default. What this means is that a component won't re-render between fetches if its data hasn't changed (through deep equals). It should work on a per-query level, but it doesn't if you manually set query data using `setQueryData`
+  - It removes even more [util functions](https://tanstack.com/query/latest/docs/framework/react/guides/migrating-to-v5#callbacks-on-usequery-and-queryobserver-have-been-removed) in v5
 
 ## Other Ideas
 
