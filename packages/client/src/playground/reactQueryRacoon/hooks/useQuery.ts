@@ -23,7 +23,7 @@ export function useQuery<T extends QueryKey>(key: T): {
     queryFn: () => {
       // Mark that a component requested the data.
       events.emit(requestDataEvent, key);
-      // Get the data from the cache.
+      // Return the (stale) data from the cache.
       return getQueryData(key) ?? null;
     }
   });
