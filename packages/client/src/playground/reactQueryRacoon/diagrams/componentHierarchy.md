@@ -4,28 +4,35 @@
 graph TD
     A[AtomStateProvider] --> B[QueryClientProvider]
     B --> C[OverseerProvider]
-    C --> D[ReportQueryProvider]
-    D --> E[ReportName]
-    D --> F[ReportTotals]
-    D --> G[ReportCashAdvances]
-    D --> H[ReportExceptions]
-    D --> I[Entries]
-    I --> J[ReportEntryQueryProvider]
-    J --> K[Entry]
-    J --> L[Receipt]
-    D --> M[Loading]
+    C --> D[ReportPage]
+    C --> O[EntryPage]
+    D --> E[ReportQueryProvider]
+
+    E --> F[ReportName]
+    E --> G[ReportTotals]
+    E --> H[ReportCashAdvances]
+    E --> J[ReportExceptions]
+    E --> I["Entries[]"]
+    I --> K[ReportEntryQueryProvider]
+    O --> K
+    K --> L[Entry]
+    K --> M[Receipt]
 ```
 
 - AtomStateProvider
   - QueryClientProvider
     - OverseerProvider
-      - ReportQueryProvider
-        - ReportName
-        - ReportTotals
-        - ReportCashAdvances
-        - ReportExceptions
-        - Entries
-          - ReportEntryQueryProvider
-            - Entry
-            - Receipt
-        - Loading
+      - ReportPage
+        - ReportQueryProvider
+          - ReportName
+          - ReportTotals
+          - ReportCashAdvances
+          - ReportExceptions
+          - Entries[]
+            - ReportEntryQueryProvider
+              - Entry
+              - Receipt
+      - EntryPage
+        - ReportEntryQueryProvider
+          - Entry
+          - Receipt

@@ -1,16 +1,17 @@
 import React, {createContext, useMemo, useEffect, useRef, useContext, type FC, type ReactNode} from 'react';
 import {useQuery} from '@tanstack/react-query'
+import { OverseerContext } from './OverseerProvider';
 import {gqlClient} from '../client';
 import { triggerRequestEvent } from '../events/triggerRequestEvent';
 import { loadingAtom } from '../atoms/loadingAtom';
-import { useAtomSetter } from '../hooks/useAtom';
+import { queriesAtom } from '../atoms/queriesAtom';
+import { useAtomLazy, useAtomSetter } from '../hooks/useAtom';
 import { useSetQueryData } from '../hooks/useSetQueryData';
 import { useGetQueryData } from '../hooks/useGetQueryData';
 import { listById } from '../utils';
 import {keys} from '../keys';
 import { DataStatus } from '../interfaces';
 import {GET_RACOON_REPORT} from '../../../queries';
-import { OverseerContext } from './OverseerProvider';
 
 export interface ReportQueryValue {
   reportId: string
@@ -34,17 +35,13 @@ export const ReportQueryProvider: FC<{reportId: string, children: ReactNode}> = 
     | 'includeName'
     | 'includeTotalAmount'
     | 'includeExceptions'
-    | 'includeEntries'>([
-      'includeName',
-      'includeTotalAmount',
-      'includeExceptions',
-      'includeEntries'
-    ])
+    | 'includeEntries'>()
   );
 
   // Main query that fetches the report data and its fragments.
   const {refetch} = useQuery({
     queryKey: [`$GetReport:${reportId}`], // <-- ignore this key
+    enabled: false,
     // Fetch the report's requested fragments.
     queryFn: () => {
       setIsLoading(true);
@@ -122,6 +119,22 @@ export const ReportQueryProvider: FC<{reportId: string, children: ReactNode}> = 
       refetch();
     }
   }), []);
+
+  const [queries] = useAtomLazy(queriesAtom);
+
+  // Trigger the initial load.
+  // NOTE: you'd likely want to check what the status of all queries
+  //  we care about is instead.
+  useEffect(() => {
+    const q = queries();
+    if (!q.size) {
+      includeFragmentsRef.current.add('includeName');
+      includeFragmentsRef.current.add('includeTotalAmount');
+      includeFragmentsRef.current.add('includeExceptions');
+      includeFragmentsRef.current.add('includeEntries');
+      refetch();
+    }
+  }, []);
 
   const value = useMemo(() => ({
     reportId,
