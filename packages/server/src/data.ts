@@ -1,11 +1,4 @@
-export type Number = {
-  id: string
-  value: number
-}
-
-export const numbers = new Map<string, Number>();
-
-interface Racoon {
+interface Report {
   id: string
   name: string
   totalAmount: number
@@ -25,7 +18,7 @@ interface Racoon {
   reset: () => void
 }
 
-export const racoon: Racoon = {
+export const report: Report = {
   id: 'REP_1',
   name: "Monthly Expenses",
   totalAmount: 2,
@@ -72,10 +65,7 @@ export const racoon: Racoon = {
 export const resolvers = {
   Mutation: {
     reset: () => {
-      numbers.clear();
-
-      racoon.reset();
-
+      report.reset();
       return true;
     }
   }

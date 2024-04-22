@@ -14,33 +14,41 @@ export type Scalars = {
   Float: number;
 };
 
-export type Employee = {
-  __typename?: 'Employee';
+export type CashAdvance = {
+  __typename?: 'CashAdvance';
+  amount: Scalars['Int'];
   id: Scalars['String'];
-  reports: Array<Report>;
 };
 
-export type Expense = {
-  __typename?: 'Expense';
+export type Entry = {
+  __typename?: 'Entry';
+  amount: Scalars['Int'];
+  exceptions: Array<Exception>;
   id: Scalars['String'];
+  receipt?: Maybe<Scalars['String']>;
+};
+
+export type Exception = {
+  __typename?: 'Exception';
+  entryId: Scalars['String'];
+  text: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  racoonMutation: RacoonMutation;
   reset: Scalars['Boolean'];
-  saveNumbers: SaveNumbersResponse;
+  updateEntryAmount: Ok;
+  updateEntryReceipt: Ok;
 };
 
 
-export type MutationSaveNumbersArgs = {
-  input: Scalars['String'];
+export type MutationUpdateEntryAmountArgs = {
+  entryId: Scalars['String'];
 };
 
-export type Number = {
-  __typename?: 'Number';
-  id: Scalars['String'];
-  value: Scalars['Float'];
+
+export type MutationUpdateEntryReceiptArgs = {
+  entryId: Scalars['String'];
 };
 
 export type Ok = {
@@ -50,120 +58,36 @@ export type Ok = {
 
 export type Query = {
   __typename?: 'Query';
-  employee: Employee;
-  number?: Maybe<Number>;
-  racoon: Racoon;
-  sum: Number;
+  entry: Entry;
+  report: Report;
 };
 
 
-export type QueryNumberArgs = {
-  id: Scalars['String'];
-};
-
-export type Racoon = {
-  __typename?: 'Racoon';
-  entry: RacoonEntry;
-  report: RacoonReport;
-};
-
-
-export type RacoonEntryArgs = {
+export type QueryEntryArgs = {
   entryId: Scalars['String'];
 };
 
 
-export type RacoonReportArgs = {
+export type QueryReportArgs = {
   reportId: Scalars['String'];
-};
-
-export type RacoonCashAdvance = {
-  __typename?: 'RacoonCashAdvance';
-  amount: Scalars['Int'];
-  id: Scalars['String'];
-};
-
-export type RacoonEntry = {
-  __typename?: 'RacoonEntry';
-  amount: Scalars['Int'];
-  exceptions: Array<RacoonException>;
-  id: Scalars['String'];
-  receipt?: Maybe<Scalars['String']>;
-};
-
-export type RacoonException = {
-  __typename?: 'RacoonException';
-  entryId: Scalars['String'];
-  text: Scalars['String'];
-};
-
-export type RacoonMutation = {
-  __typename?: 'RacoonMutation';
-  updateEntryAmount: Ok;
-  updateEntryReceipt: Ok;
-};
-
-
-export type RacoonMutationUpdateEntryAmountArgs = {
-  entryId: Scalars['String'];
-};
-
-
-export type RacoonMutationUpdateEntryReceiptArgs = {
-  entryId: Scalars['String'];
-};
-
-export type RacoonReport = {
-  __typename?: 'RacoonReport';
-  cashAdvances: Array<RacoonCashAdvance>;
-  entries: Array<RacoonEntry>;
-  exceptions: Array<RacoonException>;
-  id: Scalars['String'];
-  name: Scalars['String'];
-  totalAmount: Scalars['Int'];
 };
 
 export type Report = {
   __typename?: 'Report';
-  expenses: Array<Expense>;
+  cashAdvances: Array<CashAdvance>;
+  entries: Array<Entry>;
+  exceptions: Array<Exception>;
   id: Scalars['String'];
+  name: Scalars['String'];
+  totalAmount: Scalars['Int'];
 };
-
-export type SaveNumbersResponse = {
-  __typename?: 'SaveNumbersResponse';
-  numbers: Array<Number>;
-};
-
-export type GetSumQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetSumQuery = { __typename?: 'Query', sum: { __typename?: 'Number', id: string, value: number } };
-
-export type GetNumberQueryVariables = Exact<{
-  id: Scalars['String'];
-}>;
-
-
-export type GetNumberQuery = { __typename?: 'Query', number?: { __typename?: 'Number', id: string, value: number } | null };
-
-export type SaveNumbersMutationVariables = Exact<{
-  input: Scalars['String'];
-}>;
-
-
-export type SaveNumbersMutation = { __typename?: 'Mutation', saveNumbers: { __typename?: 'SaveNumbersResponse', numbers: Array<{ __typename?: 'Number', id: string, value: number }> } };
 
 export type ResetMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ResetMutation = { __typename?: 'Mutation', reset: boolean };
 
-export type GetExpensesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetExpensesQuery = { __typename?: 'Query', employee: { __typename?: 'Employee', id: string, reports: Array<{ __typename?: 'Report', id: string, expenses: Array<{ __typename?: 'Expense', id: string }> }> } };
-
-export type GetRacoonReportQueryVariables = Exact<{
+export type GetReportQueryVariables = Exact<{
   reportId: Scalars['String'];
   includeName: Scalars['Boolean'];
   includeTotalAmount: Scalars['Boolean'];
@@ -172,9 +96,9 @@ export type GetRacoonReportQueryVariables = Exact<{
 }>;
 
 
-export type GetRacoonReportQuery = { __typename?: 'Query', racoon: { __typename?: 'Racoon', report: { __typename?: 'RacoonReport', id: string, name?: string, totalAmount?: number, exceptions?: Array<{ __typename?: 'RacoonException', entryId: string, text: string }>, entries?: Array<{ __typename?: 'RacoonEntry', id: string, amount: number, receipt?: string | null }> } } };
+export type GetReportQuery = { __typename?: 'Query', report: { __typename?: 'Report', id: string, name?: string, totalAmount?: number, exceptions?: Array<{ __typename?: 'Exception', entryId: string, text: string }>, entries?: Array<{ __typename?: 'Entry', id: string, amount: number, receipt?: string | null }> } };
 
-export type GetRacoonEntryQueryVariables = Exact<{
+export type GetEntryQueryVariables = Exact<{
   entryId: Scalars['String'];
   includeAmount: Scalars['Boolean'];
   includeReceipt: Scalars['Boolean'];
@@ -182,37 +106,33 @@ export type GetRacoonEntryQueryVariables = Exact<{
 }>;
 
 
-export type GetRacoonEntryQuery = { __typename?: 'Query', racoon: { __typename?: 'Racoon', entry: { __typename?: 'RacoonEntry', id: string, amount?: number, receipt?: string | null, exceptions?: Array<{ __typename?: 'RacoonException', entryId: string, text: string }> } } };
+export type GetEntryQuery = { __typename?: 'Query', entry: { __typename?: 'Entry', id: string, amount?: number, receipt?: string | null, exceptions?: Array<{ __typename?: 'Exception', entryId: string, text: string }> } };
 
-export type GetRacoonCashAdvancesQueryVariables = Exact<{
+export type GetCashAdvancesQueryVariables = Exact<{
   reportId: Scalars['String'];
 }>;
 
 
-export type GetRacoonCashAdvancesQuery = { __typename?: 'Query', racoon: { __typename?: 'Racoon', report: { __typename?: 'RacoonReport', cashAdvances: Array<{ __typename?: 'RacoonCashAdvance', id: string, amount: number }> } } };
+export type GetCashAdvancesQuery = { __typename?: 'Query', report: { __typename?: 'Report', cashAdvances: Array<{ __typename?: 'CashAdvance', id: string, amount: number }> } };
 
-export type UpdateRacoonEntryAmountMutationVariables = Exact<{
+export type UpdateEntryAmountMutationVariables = Exact<{
   entryId: Scalars['String'];
 }>;
 
 
-export type UpdateRacoonEntryAmountMutation = { __typename?: 'Mutation', racoonMutation: { __typename?: 'RacoonMutation', updateEntryAmount: { __typename?: 'Ok', ok: boolean } } };
+export type UpdateEntryAmountMutation = { __typename?: 'Mutation', updateEntryAmount: { __typename?: 'Ok', ok: boolean } };
 
-export type UpdateRacoonEntryReceiptMutationVariables = Exact<{
+export type UpdateEntryReceiptMutationVariables = Exact<{
   entryId: Scalars['String'];
 }>;
 
 
-export type UpdateRacoonEntryReceiptMutation = { __typename?: 'Mutation', racoonMutation: { __typename?: 'RacoonMutation', updateEntryReceipt: { __typename?: 'Ok', ok: boolean } } };
+export type UpdateEntryReceiptMutation = { __typename?: 'Mutation', updateEntryReceipt: { __typename?: 'Ok', ok: boolean } };
 
 
-export const GetSumDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]} as unknown as DocumentNode<GetSumQuery, GetSumQueryVariables>;
-export const GetNumberDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNumber"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]} as unknown as DocumentNode<GetNumberQuery, GetNumberQueryVariables>;
-export const SaveNumbersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveNumbers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saveNumbers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numbers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<SaveNumbersMutation, SaveNumbersMutationVariables>;
 export const ResetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Reset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reset"}}]}}]} as unknown as DocumentNode<ResetMutation, ResetMutationVariables>;
-export const GetExpensesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpenses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employee"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"expenses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetExpensesQuery, GetExpensesQueryVariables>;
-export const GetRacoonReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRacoonReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeTotalAmount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeEntries"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"racoon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"report"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"reportId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeName"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeTotalAmount"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"exceptions"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entryId"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"entries"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeEntries"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"receipt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRacoonReportQuery, GetRacoonReportQueryVariables>;
-export const GetRacoonEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRacoonEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeAmount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeReceipt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"racoon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeAmount"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"receipt"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeReceipt"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"exceptions"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entryId"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRacoonEntryQuery, GetRacoonEntryQueryVariables>;
-export const GetRacoonCashAdvancesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRacoonCashAdvances"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"racoon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"report"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"reportId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cashAdvances"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetRacoonCashAdvancesQuery, GetRacoonCashAdvancesQueryVariables>;
-export const UpdateRacoonEntryAmountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRacoonEntryAmount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"racoonMutation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateEntryAmount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateRacoonEntryAmountMutation, UpdateRacoonEntryAmountMutationVariables>;
-export const UpdateRacoonEntryReceiptDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRacoonEntryReceipt"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"racoonMutation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateEntryReceipt"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateRacoonEntryReceiptMutation, UpdateRacoonEntryReceiptMutationVariables>;
+export const GetReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeTotalAmount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeEntries"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"report"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"reportId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeName"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeTotalAmount"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"exceptions"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entryId"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"entries"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeEntries"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"receipt"}}]}}]}}]}}]} as unknown as DocumentNode<GetReportQuery, GetReportQueryVariables>;
+export const GetEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeAmount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeReceipt"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entry"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeAmount"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"receipt"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeReceipt"}}}]}]},{"kind":"Field","name":{"kind":"Name","value":"exceptions"},"directives":[{"kind":"Directive","name":{"kind":"Name","value":"include"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"if"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeExceptions"}}}]}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entryId"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}}]} as unknown as DocumentNode<GetEntryQuery, GetEntryQueryVariables>;
+export const GetCashAdvancesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCashAdvances"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"report"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"reportId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"reportId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cashAdvances"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]} as unknown as DocumentNode<GetCashAdvancesQuery, GetCashAdvancesQueryVariables>;
+export const UpdateEntryAmountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateEntryAmount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateEntryAmount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UpdateEntryAmountMutation, UpdateEntryAmountMutationVariables>;
+export const UpdateEntryReceiptDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateEntryReceipt"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateEntryReceipt"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"entryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"entryId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ok"}}]}}]}}]} as unknown as DocumentNode<UpdateEntryReceiptMutation, UpdateEntryReceiptMutationVariables>;
