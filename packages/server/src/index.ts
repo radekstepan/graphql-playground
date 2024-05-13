@@ -4,15 +4,12 @@ import {mergeTypeDefs, mergeResolvers} from '@graphql-tools/merge';
 
 import report from './report/index.js';
 
-import * as data from './data.js';
-
 const server = new ApolloServer({
   typeDefs: mergeTypeDefs([
     report.typeDefs
   ]),
   resolvers: mergeResolvers([
     report.resolvers,
-    data.resolvers
   ])
 });
 

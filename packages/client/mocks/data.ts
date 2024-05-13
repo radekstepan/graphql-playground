@@ -18,7 +18,7 @@ interface Report {
   reset: () => void
 }
 
-export const report: Report = {
+export const data: Report = {
   id: 'REP_1',
   name: "Monthly Expenses",
   totalAmount: 2,
@@ -61,12 +61,3 @@ export const report: Report = {
     this.entries[1].receipt = null;
   }
 };
-
-export const resolvers = {
-  Mutation: {
-    reset: () => {
-      report.reset();
-      return true;
-    }
-  }
-}

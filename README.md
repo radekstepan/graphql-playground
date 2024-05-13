@@ -1,5 +1,5 @@
-# React Query (Racoon)
-> *Racoon is quick and dirty
+# React Query GraphQL Playground (Racoon)
+> Racoon is quick and dirty
 
 An example "report" page that has an exceptions and an entry component. The entry can be mutated which triggers cache invalidation.
 

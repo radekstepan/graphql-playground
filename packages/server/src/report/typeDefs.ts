@@ -37,7 +37,7 @@ const typeDefs = `#graphql
   type Mutation {
     updateEntryAmount(entryId: String!): Ok!
     updateEntryReceipt(entryId: String!): Ok!
-    reset: Boolean!
+    reset: Ok!
   }
 `;
 

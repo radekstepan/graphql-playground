@@ -1,5 +1,5 @@
 {
-  "name": "@graphql-playground/apollo-server",
+  "name": "server",
   "version": "0.0.1",
   "private": true,
   "type": "module",

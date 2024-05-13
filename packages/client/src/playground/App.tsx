@@ -7,12 +7,11 @@ import EntryPage from './pages/EntryPage';
 import Loading from './components/Loading';
 import {AtomStateProvider} from './providers/AtomStateProvider';
 import { OverseerProvider } from './providers/OverseerProvider';
-import {SERVER_URL} from '../const';
 import {RESET} from '../queries';
 import './styles.less'
 
 function App() {
-  request(SERVER_URL, RESET);
+  request('http://localhost:4000', RESET);
 
   return (
     <div id="racoon">

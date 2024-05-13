@@ -2,7 +2,9 @@ import {graphql} from './__generated';
 
 export const RESET = graphql(`#graphql
   mutation Reset {
-    reset
+    reset {
+      ok
+    }
   }
 `);
 
